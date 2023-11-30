@@ -1,7 +1,15 @@
-from graphics import GraphWin, Point, Text, Line
+from graphics import GraphWin, Point, Text, Line, Polygon
 
 
-def draw_patch(win, x, y, colour):
+def drawpatchwork():
+    pass
+
+
+def draw_penultimate(win, x, y, colour):
+    pass
+
+
+def draw_final(win, x, y, colour):
     size = 20
     initial_x = x
 
@@ -37,10 +45,9 @@ def draw_patch(win, x, y, colour):
 
 
 def draw_patchwork():
-    win = GraphWin("Draw Patch", 300, 200)
-    x = 20
-    y = 20
-    draw_patch(win, x, y, "red")
+    win = GraphWin("Draw Patch", 500, 500)
+    draw_final(win, 0, 0, "red")
+    draw_penultimate(win, 100, 100, "red")
     win.getMouse()
 
 
