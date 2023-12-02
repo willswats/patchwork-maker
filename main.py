@@ -26,6 +26,28 @@ def draw_triangle(win, colour, top_x, top_y, shape):
     polygon.draw(win)
 
 
+def draw_triangle_row_odd(win, colour, x, y):
+    start = 0
+    end = 5
+
+    line_row_x = x - 10
+    for x_increment in range(6):
+        if x_increment == start:
+            draw_triangle(win, colour, line_row_x, y, "half_right")
+        elif x_increment == end:
+            draw_triangle(win, colour, line_row_x, y, "half_left")
+        else:
+            draw_triangle(win, colour, line_row_x, y, "")
+        line_row_x += 20
+
+
+def draw_triangle_row(win, colour, x, y):
+    line_row_x = x
+    for _ in range(5):
+        draw_triangle(win, colour, line_row_x, y, "")
+        line_row_x += 20
+
+
 def drawpatchwork():
     pass
 
@@ -35,10 +57,11 @@ def draw_penultimate(win, x, y, colour):
 
     line_row_x = initial_x
     line_row_y = y
-    for _ in range(5):
-        for _ in range(5):
-            draw_triangle(win, colour, line_row_x, line_row_y, _)
-            line_row_x += 20
+    for y_increment in range(5):
+        if y_increment % 2 == 0:
+            draw_triangle_row(win, colour, line_row_x, line_row_y)
+        else:
+            draw_triangle_row_odd(win, colour, line_row_x, line_row_y)
         line_row_x = initial_x
         line_row_y += 20
 
