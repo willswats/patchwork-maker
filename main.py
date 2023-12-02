@@ -67,13 +67,6 @@ def draw_final(win, x, y, colour):
     initial_x = x
     initial_y = y
 
-    for _ in range(4):
-        line_column = Line(Point(x + 20, y), Point(x + 20, y + 100))
-        line_column.setOutline(colour)
-        line_column.draw(win)
-        x += size
-    x = initial_x
-
     for _ in range(5):
         for _ in range(5):
             text_point = Point(x + (size / 2), y + (size / 2))
@@ -85,6 +78,13 @@ def draw_final(win, x, y, colour):
         x = initial_x
         y += size
     y = initial_y
+    x = initial_x
+
+    for _ in range(4):
+        line_column = Line(Point(x + 20, y), Point(x + 20, y + 100))
+        line_column.setOutline(colour)
+        line_column.draw(win)
+        x += size
     x = initial_x
 
     for _ in range(4):
