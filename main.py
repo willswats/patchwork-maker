@@ -115,7 +115,7 @@ def choose_draw(
         draw_colour_block(win, x, y, colour)
 
 
-def draw_patchwork():
+def draw_patchwork(size, colours):
     win = GraphWin("Draw Patch", 500, 500)
 
     x = 0
@@ -127,14 +127,14 @@ def draw_patchwork():
     pen_x = 1
     pen_y = 3
 
-    yellow = 4
-    red = 4
+    colour_two = 4
+    colour_three = 4
 
     colour = "blue"
     for y_increment in range(5):
         for x_increment in range(5):
-            if x_increment == yellow:
-                colour = "yellow"
+            if x_increment == colour_two:
+                colour = colours[1]
                 choose_draw(
                     win,
                     x,
@@ -147,8 +147,8 @@ def draw_patchwork():
                     pen_x,
                     pen_y,
                 )
-            elif y_increment > 0 and x_increment >= red:
-                colour = "red"
+            elif y_increment > 0 and x_increment >= colour_three:
+                colour = colours[2]
                 choose_draw(
                     win,
                     x,
@@ -162,7 +162,7 @@ def draw_patchwork():
                     pen_y,
                 )
             else:
-                colour = "blue"
+                colour = colours[0]
                 choose_draw(
                     win,
                     x,
@@ -176,15 +176,72 @@ def draw_patchwork():
                     pen_y,
                 )
             x += 100
-        yellow -= 1
-        red -= 1
+        colour_two -= 1
+        colour_three -= 1
         x = initial_x
         y += 100
     win.getMouse()
 
 
+def check_string_is_equal_to_item_in_list(string_check, list_check):
+    valid = False
+    for item in list_check:
+        if string_check == item:
+            valid = True
+
+    return valid
+
+
+def check_colour(prev_colours, valid_colours):
+    valid_colours_string = ", ".join(valid_colours)
+    while True:
+        colour = (
+            input(f"Enter patchwork colour ({valid_colours_string}): ").lower().strip()
+        )
+
+        colour_valid = check_string_is_equal_to_item_in_list(colour, valid_colours)
+        colour_exists = check_string_is_equal_to_item_in_list(colour, prev_colours)
+        if not colour_valid:
+            print(f"Invalid colour. Valid colours: {valid_colours_string}")
+        elif colour_exists:
+            print("The colour you entered has previously been entered.")
+        else:
+            return colour
+
+
+def check_size(valid_sizes):
+    valid_sizes_string = ", ".join(valid_sizes)
+    while True:
+        size = (
+            input(f"Enter the patchwork size ({valid_sizes_string}): ").lower().strip()
+        )
+
+        valid_size = check_string_is_equal_to_item_in_list(size, valid_sizes)
+        if not valid_size:
+            print(f"Invalid size. Valid sizes: {valid_sizes_string}")
+        else:
+            return size
+
+
+def get_inputs():
+    valid_sizes = ["5", "7", "9"]
+    valid_colours = ["red", "green", "blue", "magenta", "orange", "yellow", "cyan"]
+    colours = []
+
+    size = check_size(valid_sizes)
+    colourOne = check_colour(colours, valid_colours)
+    colours.append(colourOne)
+    colourTwo = check_colour(colours, valid_colours)
+    colours.append(colourTwo)
+    colourThree = check_colour(colours, valid_colours)
+    colours.append(colourThree)
+
+    return size, colours
+
+
 def main():
-    draw_patchwork()
+    size, colours = get_inputs()
+    draw_patchwork(size, colours)
 
 
 main()
