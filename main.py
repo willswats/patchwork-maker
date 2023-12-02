@@ -111,12 +111,19 @@ def choose_draw(
     y_increment,
     final_x_index,
     final_y_index,
-    pen_x_index,
-    pen_y_index,
+    pen_x_index_lower_bound,
+    pen_x_index_higher_bound,
+    pen_y_index_lower_bound,
+    pen_y_index_higher_bound,
 ):
-    if y_increment == pen_y_index and x_increment == pen_x_index:
+    if (
+        x_increment >= pen_x_index_lower_bound
+        and x_increment <= pen_x_index_higher_bound
+        and y_increment >= pen_y_index_lower_bound
+        and y_increment <= pen_y_index_higher_bound
+    ):
         draw_penultimate(win, x, y, colour)
-    elif y_increment >= final_y_index and x_increment <= final_x_index:
+    elif x_increment <= final_x_index and y_increment >= final_y_index:
         draw_final(win, x, y, colour)
     else:
         draw_colour_block(win, x, y, colour)
@@ -133,24 +140,46 @@ def draw_patchwork(size, colours):
     final_x_index = 2
     final_y_index = 2
 
-    pen_x_index = 1
-    pen_y_index = 3
+    pen_x_index_lower_bound = 1
+    pen_x_index_higher_bound = 1
+    pen_y_index_lower_bound = 3
+    pen_y_index_higher_bound = 3
 
-    colour_two = 4
-    colour_three = 4
+    colour_two_index = 4
+    colour_three_index = 4
 
     if size == 7:
         win_width = 700
         win_height = 700
+
+        final_x_index = final_x_index + 1
+        final_y_index = final_y_index + 1
+
+        pen_x_index_higher_bound = pen_x_index_higher_bound + 1
+        pen_y_index_lower_bound = pen_y_index_higher_bound + 1
+        pen_y_index_higher_bound = pen_y_index_higher_bound + 2
+
+        colour_two_index = colour_two_index + 2
+        colour_three_index = colour_three_index + 2
     elif size == 9:
         win_width = 900
         win_height = 900
 
-    win = GraphWin("Draw Patch", win_width, win_height)
+        final_x_index = final_x_index + 2
+        final_y_index = final_y_index + 2
+
+        pen_x_index_higher_bound = pen_x_index_higher_bound + 2
+        pen_y_index_lower_bound = pen_y_index_higher_bound + 2
+        pen_y_index_higher_bound = pen_y_index_higher_bound + 4
+
+        colour_two_index = colour_two_index + 4
+        colour_three_index = colour_three_index + 4
+
+    win = GraphWin("Patchwork", win_width, win_height)
 
     for y_increment in range(size):
         for x_increment in range(size):
-            if x_increment == colour_two:
+            if x_increment == colour_two_index:
                 colour = colours[1]
                 choose_draw(
                     win,
@@ -161,10 +190,12 @@ def draw_patchwork(size, colours):
                     y_increment,
                     final_x_index,
                     final_y_index,
-                    pen_x_index,
-                    pen_y_index,
+                    pen_x_index_lower_bound,
+                    pen_x_index_higher_bound,
+                    pen_y_index_lower_bound,
+                    pen_y_index_higher_bound,
                 )
-            elif y_increment > 0 and x_increment >= colour_three:
+            elif y_increment > 0 and x_increment >= colour_three_index:
                 colour = colours[2]
                 choose_draw(
                     win,
@@ -175,8 +206,10 @@ def draw_patchwork(size, colours):
                     y_increment,
                     final_x_index,
                     final_y_index,
-                    pen_x_index,
-                    pen_y_index,
+                    pen_x_index_lower_bound,
+                    pen_x_index_higher_bound,
+                    pen_y_index_lower_bound,
+                    pen_y_index_higher_bound,
                 )
             else:
                 colour = colours[0]
@@ -189,12 +222,14 @@ def draw_patchwork(size, colours):
                     y_increment,
                     final_x_index,
                     final_y_index,
-                    pen_x_index,
-                    pen_y_index,
+                    pen_x_index_lower_bound,
+                    pen_x_index_higher_bound,
+                    pen_y_index_lower_bound,
+                    pen_y_index_higher_bound,
                 )
             x += 100
-        colour_two -= 1
-        colour_three -= 1
+        colour_two_index -= 1
+        colour_three_index -= 1
         x = initial_x
         y += 100
     win.getMouse()
