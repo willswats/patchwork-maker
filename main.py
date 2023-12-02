@@ -1,12 +1,46 @@
 from graphics import GraphWin, Point, Text, Line, Polygon
 
 
+def draw_triangle(win, colour, top_x, top_y, shape):
+    offset_x = 10
+    offset_y = 20
+    polygon = Polygon(
+        Point(top_x, top_y),
+        Point(top_x - offset_x, top_y + offset_y),
+        Point(top_x + offset_x, top_y + offset_y),
+    )
+    if shape == "half_left":
+        polygon = Polygon(
+            Point(top_x, top_y),
+            Point(top_x - offset_x, top_y + offset_y),
+            Point(top_x, top_y + offset_y),
+        )
+    elif shape == "half_right":
+        polygon = Polygon(
+            Point(top_x, top_y),
+            Point(top_x, top_y + offset_y),
+            Point(top_x + offset_x, top_y + offset_y),
+        )
+    polygon.setFill(colour)
+    polygon.setOutline(colour)
+    polygon.draw(win)
+
+
 def drawpatchwork():
     pass
 
 
 def draw_penultimate(win, x, y, colour):
-    pass
+    initial_x = x + 10
+
+    line_row_x = initial_x
+    line_row_y = y
+    for _ in range(5):
+        for _ in range(5):
+            draw_triangle(win, colour, line_row_x, line_row_y, _)
+            line_row_x += 20
+        line_row_x = initial_x
+        line_row_y += 20
 
 
 def draw_final(win, x, y, colour):
@@ -47,7 +81,7 @@ def draw_final(win, x, y, colour):
 def draw_patchwork():
     win = GraphWin("Draw Patch", 500, 500)
     draw_final(win, 0, 0, "red")
-    draw_penultimate(win, 100, 100, "red")
+    draw_penultimate(win, 100, 0, "red")
     win.getMouse()
 
 
