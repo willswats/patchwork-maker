@@ -104,51 +104,82 @@ def draw_colour_block(win, top_left_x, top_left_y, colour):
     rectangle.draw(win)
 
 
+def choose_draw(
+    win, x, y, colour, y_increment, x_increment, final_x, final_y, pen_x, pen_y
+):
+    if y_increment == pen_y and x_increment == pen_x:
+        draw_penultimate(win, x, y, colour)
+    elif y_increment >= final_y and x_increment <= final_x:
+        draw_final(win, x, y, colour)
+    else:
+        draw_colour_block(win, x, y, colour)
+
+
 def draw_patchwork():
     win = GraphWin("Draw Patch", 500, 500)
 
     x = 0
     y = 0
     initial_x = x
+
     final_y = 2
     final_x = 2
     pen_x = 1
     pen_y = 3
+
     yellow = 4
     red = 4
+
     colour = "blue"
     for y_increment in range(5):
         for x_increment in range(5):
             if x_increment == yellow:
                 colour = "yellow"
-                if y_increment == pen_y and x_increment == pen_x:
-                    draw_penultimate(win, x, y, colour)
-                elif y_increment >= final_y and x_increment <= final_x:
-                    draw_final(win, x, y, colour)
-                else:
-                    draw_colour_block(win, x, y, colour)
+                choose_draw(
+                    win,
+                    x,
+                    y,
+                    colour,
+                    y_increment,
+                    x_increment,
+                    final_x,
+                    final_y,
+                    pen_x,
+                    pen_y,
+                )
             elif y_increment > 0 and x_increment >= red:
                 colour = "red"
-                if y_increment == pen_y and x_increment == pen_x:
-                    draw_penultimate(win, x, y, colour)
-                elif y_increment >= final_y and x_increment <= final_x:
-                    draw_final(win, x, y, colour)
-                else:
-                    draw_colour_block(win, x, y, colour)
+                choose_draw(
+                    win,
+                    x,
+                    y,
+                    colour,
+                    y_increment,
+                    x_increment,
+                    final_x,
+                    final_y,
+                    pen_x,
+                    pen_y,
+                )
             else:
                 colour = "blue"
-                if y_increment == pen_y and x_increment == pen_x:
-                    draw_penultimate(win, x, y, colour)
-                elif y_increment >= final_y and x_increment <= final_x:
-                    draw_final(win, x, y, colour)
-                else:
-                    draw_colour_block(win, x, y, colour)
+                choose_draw(
+                    win,
+                    x,
+                    y,
+                    colour,
+                    y_increment,
+                    x_increment,
+                    final_x,
+                    final_y,
+                    pen_x,
+                    pen_y,
+                )
             x += 100
         yellow -= 1
         red -= 1
         x = initial_x
         y += 100
-    draw_penultimate(win, 100, 0, "red")
     win.getMouse()
 
 
