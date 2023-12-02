@@ -103,34 +103,53 @@ def draw_colour_block(win, top_left_x, top_left_y, colour):
 
 
 def choose_draw(
-    win, x, y, colour, y_increment, x_increment, final_x, final_y, pen_x, pen_y
+    win,
+    x,
+    y,
+    colour,
+    x_increment,
+    y_increment,
+    final_x_index,
+    final_y_index,
+    pen_x_index,
+    pen_y_index,
 ):
-    if y_increment == pen_y and x_increment == pen_x:
+    if y_increment == pen_y_index and x_increment == pen_x_index:
         draw_penultimate(win, x, y, colour)
-    elif y_increment >= final_y and x_increment <= final_x:
+    elif y_increment >= final_y_index and x_increment <= final_x_index:
         draw_final(win, x, y, colour)
     else:
         draw_colour_block(win, x, y, colour)
 
 
 def draw_patchwork(size, colours):
-    win = GraphWin("Draw Patch", 500, 500)
+    win_width = 500
+    win_height = 500
 
     x = 0
     y = 0
     initial_x = x
 
-    final_y = 2
-    final_x = 2
-    pen_x = 1
-    pen_y = 3
+    final_x_index = 2
+    final_y_index = 2
+
+    pen_x_index = 1
+    pen_y_index = 3
 
     colour_two = 4
     colour_three = 4
 
-    colour = "blue"
-    for y_increment in range(5):
-        for x_increment in range(5):
+    if size == 7:
+        win_width = 700
+        win_height = 700
+    elif size == 9:
+        win_width = 900
+        win_height = 900
+
+    win = GraphWin("Draw Patch", win_width, win_height)
+
+    for y_increment in range(size):
+        for x_increment in range(size):
             if x_increment == colour_two:
                 colour = colours[1]
                 choose_draw(
@@ -138,12 +157,12 @@ def draw_patchwork(size, colours):
                     x,
                     y,
                     colour,
-                    y_increment,
                     x_increment,
-                    final_x,
-                    final_y,
-                    pen_x,
-                    pen_y,
+                    y_increment,
+                    final_x_index,
+                    final_y_index,
+                    pen_x_index,
+                    pen_y_index,
                 )
             elif y_increment > 0 and x_increment >= colour_three:
                 colour = colours[2]
@@ -152,12 +171,12 @@ def draw_patchwork(size, colours):
                     x,
                     y,
                     colour,
-                    y_increment,
                     x_increment,
-                    final_x,
-                    final_y,
-                    pen_x,
-                    pen_y,
+                    y_increment,
+                    final_x_index,
+                    final_y_index,
+                    pen_x_index,
+                    pen_y_index,
                 )
             else:
                 colour = colours[0]
@@ -166,12 +185,12 @@ def draw_patchwork(size, colours):
                     x,
                     y,
                     colour,
-                    y_increment,
                     x_increment,
-                    final_x,
-                    final_y,
-                    pen_x,
-                    pen_y,
+                    y_increment,
+                    final_x_index,
+                    final_y_index,
+                    pen_x_index,
+                    pen_y_index,
                 )
             x += 100
         colour_two -= 1
@@ -234,7 +253,7 @@ def get_inputs():
     colourThree = check_colour(colours, valid_colours)
     colours.append(colourThree)
 
-    return size, colours
+    return int(size), colours
 
 
 def main():
