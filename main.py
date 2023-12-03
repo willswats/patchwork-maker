@@ -176,6 +176,7 @@ def draw_patchwork(size, colours):
         colour_three_index = colour_three_index + 4
 
     win = GraphWin("Patchwork", win_width, win_height)
+    win.setBackground("white")
 
     for y_increment in range(size):
         for x_increment in range(size):
