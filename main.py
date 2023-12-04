@@ -1,3 +1,4 @@
+from math import sqrt
 from graphics import GraphWin, Point, Text, Line, Polygon, Rectangle
 
 
@@ -74,9 +75,9 @@ def draw_line_column(win, x, initial_y, colour):
     line_column.draw(win)
 
 
-def draw_text_in_block(win, x, y, block_size, colour, text, text_size):
+def draw_text_in_block(win, x, y, block_size, colour, text_string, text_size):
     text_point = Point(x + (block_size / 2), y + (block_size / 2))
-    text = Text(text_point, "hi!")
+    text = Text(text_point, text_string)
     text.setFill(colour)
     text.setSize(text_size)
     text.draw(win)
@@ -107,11 +108,10 @@ def draw_final(win, x, y, colour):
 
 
 # draw_patchwork functions
-def draw_colour_block(win, top_left_x, top_left_y, colour):
-    block_size = 100
+def draw_colour_block(win, top_left_x, top_left_y, colour, size):
     rectangle = Rectangle(
         Point(top_left_x, top_left_y),
-        Point(top_left_x + block_size, top_left_y + block_size),
+        Point(top_left_x + size, top_left_y + size),
     )
     rectangle.setFill(colour)
     rectangle.setOutline(colour)
@@ -132,6 +132,8 @@ def choose_draw(
     pen_y_index_lower_bound,
     pen_y_index_higher_bound,
 ):
+    colour_block_size = 100
+
     if (
         x_increment >= pen_x_index_lower_bound
         and x_increment <= pen_x_index_higher_bound
@@ -142,7 +144,7 @@ def choose_draw(
     elif x_increment <= final_x_index and y_increment >= final_y_index:
         draw_final(win, x, y, colour)
     else:
-        draw_colour_block(win, x, y, colour)
+        draw_colour_block(win, x, y, colour, colour_block_size)
 
 
 def draw_patchwork(size, sizes, colours):
@@ -221,6 +223,9 @@ def draw_patchwork(size, sizes, colours):
         colour_split -= 1
         x = initial_x
         y += 100
+
+    challenge(win)
+
     win.getMouse()
 
 
@@ -281,6 +286,69 @@ def get_inputs():
     sizes = [int(size) for size in valid_sizes]
 
     return int(size), sizes, colours
+
+
+# challenge functions
+def find_distance_between_two_points(point_one, point_two):
+    distance = sqrt(
+        (point_two.getX() - point_one.getX()) ** 2
+        + (point_two.getY() - point_one.getY()) ** 2
+    )
+    return distance
+
+
+def draw_button(
+    win,
+    top_left_x,
+    top_left_y,
+    block_colour,
+    block_size,
+    text_colour,
+    text_size,
+    text_string,
+):
+    draw_colour_block(win, top_left_x, top_left_y, block_colour, block_size)
+    draw_text_in_block(
+        win, top_left_x, top_left_y, block_size, text_colour, text_string, text_size
+    )
+
+
+# start in selection mode
+# show ok and close buttons
+# close causes window to close
+# click patches to select them
+# click ok to exit selection mode
+# in edit mode:
+# s to go back to selection mode
+# d to deselect all patches
+# p to change all selected patches to penultimate (keep colours same)
+# f to to change all selected patches to final (keep colours same)
+# q to change all selected patches to be a coloured block (keep colours same)
+# the initial letter of any valid colour should change all selected patches to that colour (keep designs same)
+# x is for your own function (creative)
+# note: keys should have no effect in selection mode and mouse clicks should have no effect in edit mode
+# operations should remove or recreate, instead of drawing over existing
+def challenge(win):
+    button_size = 30
+    button_colour = "black"
+
+    text_size = 6
+    text_colour = "white"
+
+    draw_button(win, 0, 0, button_colour, button_size, text_colour, text_size, "OK")
+    draw_button(
+        win,
+        win.getWidth() - button_size,
+        0,
+        button_colour,
+        button_size,
+        text_colour,
+        text_size,
+        "CLOSE",
+    )
+
+    while True:
+        win.getMouse()
 
 
 # main
