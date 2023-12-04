@@ -65,32 +65,28 @@ def draw_final(win, x, y, colour):
     initial_x = x
     initial_y = y
 
-    for _ in range(5):
-        for _ in range(5):
+    for y_increment in range(5):
+        if y_increment < 4:
+            line_row = Line(Point(initial_x, y + 20), Point(initial_x + 100, y + 20))
+            line_row.setOutline(colour)
+            line_row.draw(win)
+        for x_increment in range(5):
             text_point = Point(x + (size / 2), y + (size / 2))
             text = Text(text_point, "hi!")
             text.setFill(colour)
             text.setSize(8)
             text.draw(win)
+
+            if x_increment < 4:
+                line_column = Line(
+                    Point(x + 20, initial_y), Point(x + 20, initial_y + 100)
+                )
+                line_column.setOutline(colour)
+                line_column.draw(win)
+
             x += size
         x = initial_x
         y += size
-    y = initial_y
-    x = initial_x
-
-    for _ in range(4):
-        line_column = Line(Point(x + 20, y), Point(x + 20, y + 100))
-        line_column.setOutline(colour)
-        line_column.draw(win)
-        x += size
-    x = initial_x
-
-    for _ in range(4):
-        line_row = Line(Point(initial_x, y + 20), Point(initial_x + 100, y + 20))
-        line_row.setOutline(colour)
-        line_row.draw(win)
-        y += size
-    x = initial_x
 
 
 def draw_colour_block(win, top_left_x, top_left_y, colour):
