@@ -111,11 +111,14 @@ def choose_draw(
     y_increment,
     final_x_index,
     final_y_index,
-    pen_x_index_lower_bound,
-    pen_x_index_higher_bound,
-    pen_y_index_lower_bound,
-    pen_y_index_higher_bound,
+    pen_x_indexes,
+    pen_y_indexes,
 ):
+    pen_x_index_lower_bound = pen_x_indexes[0]
+    pen_x_index_higher_bound = pen_x_indexes[1]
+    pen_y_index_lower_bound = pen_y_indexes[0]
+    pen_y_index_higher_bound = pen_y_indexes[1]
+
     if (
         x_increment >= pen_x_index_lower_bound
         and x_increment <= pen_x_index_higher_bound
@@ -140,13 +143,10 @@ def draw_patchwork(size, colours):
     final_x_index = 2
     final_y_index = 2
 
-    pen_x_index_lower_bound = 1
-    pen_x_index_higher_bound = 1
-    pen_y_index_lower_bound = 3
-    pen_y_index_higher_bound = 3
+    pen_x_indexes = [1, 1]
+    pen_y_indexes = [3, 3]
 
-    colour_two_index = 4
-    colour_three_index = 4
+    colour_split = 4
 
     if size == 7:
         win_width = 700
@@ -155,12 +155,10 @@ def draw_patchwork(size, colours):
         final_x_index = final_x_index + 1
         final_y_index = final_y_index + 1
 
-        pen_x_index_higher_bound = pen_x_index_higher_bound + 1
-        pen_y_index_lower_bound = pen_y_index_higher_bound + 1
-        pen_y_index_higher_bound = pen_y_index_higher_bound + 2
+        pen_x_indexes = [pen_x_indexes[0], pen_x_indexes[1] + 1]
+        pen_y_indexes = [pen_y_indexes[0] + 1, pen_y_indexes[1] + 2]
 
-        colour_two_index = colour_two_index + 2
-        colour_three_index = colour_three_index + 2
+        colour_split = colour_split + 2
     elif size == 9:
         win_width = 900
         win_height = 900
@@ -168,19 +166,17 @@ def draw_patchwork(size, colours):
         final_x_index = final_x_index + 2
         final_y_index = final_y_index + 2
 
-        pen_x_index_higher_bound = pen_x_index_higher_bound + 2
-        pen_y_index_lower_bound = pen_y_index_higher_bound + 2
-        pen_y_index_higher_bound = pen_y_index_higher_bound + 4
+        pen_x_indexes = [pen_x_indexes[0], pen_x_indexes[1] + 2]
+        pen_y_indexes = [pen_y_indexes[0] + 2, pen_y_indexes[1] + 4]
 
-        colour_two_index = colour_two_index + 4
-        colour_three_index = colour_three_index + 4
+        colour_split = colour_split + 4
 
     win = GraphWin("Patchwork", win_width, win_height)
     win.setBackground("white")
 
     for y_increment in range(size):
         for x_increment in range(size):
-            if x_increment == colour_two_index:
+            if x_increment == colour_split:
                 colour = colours[1]
                 choose_draw(
                     win,
@@ -191,12 +187,10 @@ def draw_patchwork(size, colours):
                     y_increment,
                     final_x_index,
                     final_y_index,
-                    pen_x_index_lower_bound,
-                    pen_x_index_higher_bound,
-                    pen_y_index_lower_bound,
-                    pen_y_index_higher_bound,
+                    pen_x_indexes,
+                    pen_y_indexes,
                 )
-            elif y_increment > 0 and x_increment >= colour_three_index:
+            elif y_increment > 0 and x_increment >= colour_split:
                 colour = colours[2]
                 choose_draw(
                     win,
@@ -207,10 +201,8 @@ def draw_patchwork(size, colours):
                     y_increment,
                     final_x_index,
                     final_y_index,
-                    pen_x_index_lower_bound,
-                    pen_x_index_higher_bound,
-                    pen_y_index_lower_bound,
-                    pen_y_index_higher_bound,
+                    pen_x_indexes,
+                    pen_y_indexes,
                 )
             else:
                 colour = colours[0]
@@ -223,14 +215,11 @@ def draw_patchwork(size, colours):
                     y_increment,
                     final_x_index,
                     final_y_index,
-                    pen_x_index_lower_bound,
-                    pen_x_index_higher_bound,
-                    pen_y_index_lower_bound,
-                    pen_y_index_higher_bound,
+                    pen_x_indexes,
+                    pen_y_indexes,
                 )
             x += 100
-        colour_two_index -= 1
-        colour_three_index -= 1
+        colour_split -= 1
         x = initial_x
         y += 100
     win.getMouse()
@@ -245,7 +234,8 @@ def check_string_is_equal_to_item_in_list(string_check, list_check):
     return valid
 
 
-def check_colour(prev_colours, valid_colours):
+def check_colour(prev_colours):
+    valid_colours = ["red", "green", "blue", "magenta", "orange", "yellow", "cyan"]
     valid_colours_string = ", ".join(valid_colours)
     while True:
         colour = (
@@ -262,7 +252,8 @@ def check_colour(prev_colours, valid_colours):
             return colour
 
 
-def check_size(valid_sizes):
+def check_size():
+    valid_sizes = ["5", "7", "9"]
     valid_sizes_string = ", ".join(valid_sizes)
     while True:
         size = (
@@ -277,16 +268,14 @@ def check_size(valid_sizes):
 
 
 def get_inputs():
-    valid_sizes = ["5", "7", "9"]
-    valid_colours = ["red", "green", "blue", "magenta", "orange", "yellow", "cyan"]
     colours = []
 
-    size = check_size(valid_sizes)
-    colourOne = check_colour(colours, valid_colours)
+    size = check_size()
+    colourOne = check_colour(colours)
     colours.append(colourOne)
-    colourTwo = check_colour(colours, valid_colours)
+    colourTwo = check_colour(colours)
     colours.append(colourTwo)
-    colourThree = check_colour(colours, valid_colours)
+    colourThree = check_colour(colours)
     colours.append(colourThree)
 
     return int(size), colours
