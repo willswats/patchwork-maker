@@ -1,6 +1,7 @@
 from graphics import GraphWin, Point, Text, Line, Polygon, Rectangle
 
 
+# draw_penultimate functions
 def draw_triangle(win, colour, top_x, top_y, shape):
     offset_x = 10
     offset_y = 20
@@ -60,38 +61,59 @@ def draw_penultimate(win, x, y, colour):
         y += 20
 
 
+# draw_final functions
+def draw_line_row(win, x, y, initial_x, colour):
+    line_row = Line(Point(initial_x, y + 20), Point(initial_x + 100, y + 20))
+    line_row.setOutline(colour)
+    line_row.draw(win)
+
+
+def draw_line_column(win, x, y, initial_y, colour):
+    line_column = Line(Point(x + 20, initial_y), Point(x + 20, initial_y + 100))
+    line_column.setOutline(colour)
+    line_column.draw(win)
+
+
+def draw_text_in_block(win, x, y, block_size, colour, text, text_size):
+    text_point = Point(x + (block_size / 2), y + (block_size / 2))
+    text = Text(text_point, "hi!")
+    text.setFill(colour)
+    text.setSize(8)
+    text.draw(win)
+
+
 def draw_final(win, x, y, colour):
-    size = 20
+    block_size = 20
+
+    repetitions = 5
+    row_end = 4
+    column_end = 4
+
     initial_x = x
     initial_y = y
 
-    for y_increment in range(5):
-        if y_increment < 4:
-            line_row = Line(Point(initial_x, y + 20), Point(initial_x + 100, y + 20))
-            line_row.setOutline(colour)
-            line_row.draw(win)
-        for x_increment in range(5):
-            text_point = Point(x + (size / 2), y + (size / 2))
-            text = Text(text_point, "hi!")
-            text.setFill(colour)
-            text.setSize(8)
-            text.draw(win)
+    text = "hi"
+    text_size = 8
 
-            if x_increment < 4:
-                line_column = Line(
-                    Point(x + 20, initial_y), Point(x + 20, initial_y + 100)
-                )
-                line_column.setOutline(colour)
-                line_column.draw(win)
+    for y_increment in range(repetitions):
+        if y_increment < row_end:
+            draw_line_row(win, x, y, initial_x, colour)
+        for x_increment in range(repetitions):
+            draw_text_in_block(win, x, y, block_size, colour, text, text_size)
+            if x_increment < column_end:
+                draw_line_column(win, x, y, initial_y, colour)
 
-            x += size
+            x += block_size
         x = initial_x
-        y += size
+        y += block_size
 
 
+# draw_patchwork functions
 def draw_colour_block(win, top_left_x, top_left_y, colour):
+    block_size = 100
     rectangle = Rectangle(
-        Point(top_left_x, top_left_y), Point(top_left_x + 100, top_left_y + 100)
+        Point(top_left_x, top_left_y),
+        Point(top_left_x + block_size, top_left_y + block_size),
     )
     rectangle.setFill(colour)
     rectangle.setOutline(colour)
@@ -221,6 +243,7 @@ def draw_patchwork(size, colours):
     win.getMouse()
 
 
+# get_inputs functions
 def check_string_is_equal_to_item_in_list(string_check, list_check):
     valid = False
     for item in list_check:
@@ -277,6 +300,7 @@ def get_inputs():
     return int(size), colours
 
 
+# main
 def main():
     size, colours = get_inputs()
     draw_patchwork(size, colours)
