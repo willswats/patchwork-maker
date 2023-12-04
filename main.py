@@ -62,13 +62,13 @@ def draw_penultimate(win, x, y, colour):
 
 
 # draw_final functions
-def draw_line_row(win, x, y, initial_x, colour):
+def draw_line_row(win, y, initial_x, colour):
     line_row = Line(Point(initial_x, y + 20), Point(initial_x + 100, y + 20))
     line_row.setOutline(colour)
     line_row.draw(win)
 
 
-def draw_line_column(win, x, y, initial_y, colour):
+def draw_line_column(win, x, initial_y, colour):
     line_column = Line(Point(x + 20, initial_y), Point(x + 20, initial_y + 100))
     line_column.setOutline(colour)
     line_column.draw(win)
@@ -78,7 +78,7 @@ def draw_text_in_block(win, x, y, block_size, colour, text, text_size):
     text_point = Point(x + (block_size / 2), y + (block_size / 2))
     text = Text(text_point, "hi!")
     text.setFill(colour)
-    text.setSize(8)
+    text.setSize(text_size)
     text.draw(win)
 
 
@@ -86,8 +86,6 @@ def draw_final(win, x, y, colour):
     block_size = 20
 
     repetitions = 5
-    row_end = 4
-    column_end = 4
 
     initial_x = x
     initial_y = y
@@ -96,12 +94,12 @@ def draw_final(win, x, y, colour):
     text_size = 8
 
     for y_increment in range(repetitions):
-        if y_increment < row_end:
-            draw_line_row(win, x, y, initial_x, colour)
+        if y_increment < repetitions - 1:
+            draw_line_row(win, y, initial_x, colour)
         for x_increment in range(repetitions):
             draw_text_in_block(win, x, y, block_size, colour, text, text_size)
-            if x_increment < column_end:
-                draw_line_column(win, x, y, initial_y, colour)
+            if x_increment < repetitions - 1:
+                draw_line_column(win, x, initial_y, colour)
 
             x += block_size
         x = initial_x
@@ -129,14 +127,11 @@ def choose_draw(
     y_increment,
     final_x_index,
     final_y_index,
-    pen_x_indexes,
-    pen_y_indexes,
+    pen_x_index_lower_bound,
+    pen_x_index_higher_bound,
+    pen_y_index_lower_bound,
+    pen_y_index_higher_bound,
 ):
-    pen_x_index_lower_bound = pen_x_indexes[0]
-    pen_x_index_higher_bound = pen_x_indexes[1]
-    pen_y_index_lower_bound = pen_y_indexes[0]
-    pen_y_index_higher_bound = pen_y_indexes[1]
-
     if (
         x_increment >= pen_x_index_lower_bound
         and x_increment <= pen_x_index_higher_bound
@@ -150,48 +145,28 @@ def choose_draw(
         draw_colour_block(win, x, y, colour)
 
 
-def draw_patchwork(size, colours):
-    win_width = 500
-    win_height = 500
+def draw_patchwork(size, sizes, colours):
+    size_index = sizes.index(size)
+
+    size_decrement = size_index + 3
+    final_x_index = size - size_decrement
+    final_y_index = size - size_decrement
+
+    pen_x_index_lower_bound = 1
+    pen_x_index_higher_bound = 1 + size_index
+    pen_y_index_lower_bound = 3 + size_index
+    pen_y_index_higher_bound = 3 + (size_index * 2)
+
+    colour_split = size - 1
+
+    win_width = int(f"{size}00")
+    win_height = int(f"{size}00")
+    win = GraphWin("Patchwork", win_width, win_height)
+    win.setBackground("white")
 
     x = 0
     y = 0
     initial_x = x
-
-    final_x_index = 2
-    final_y_index = 2
-
-    pen_x_indexes = [1, 1]
-    pen_y_indexes = [3, 3]
-
-    colour_split = 4
-
-    if size == 7:
-        win_width = 700
-        win_height = 700
-
-        final_x_index = final_x_index + 1
-        final_y_index = final_y_index + 1
-
-        pen_x_indexes = [pen_x_indexes[0], pen_x_indexes[1] + 1]
-        pen_y_indexes = [pen_y_indexes[0] + 1, pen_y_indexes[1] + 2]
-
-        colour_split = colour_split + 2
-    elif size == 9:
-        win_width = 900
-        win_height = 900
-
-        final_x_index = final_x_index + 2
-        final_y_index = final_y_index + 2
-
-        pen_x_indexes = [pen_x_indexes[0], pen_x_indexes[1] + 2]
-        pen_y_indexes = [pen_y_indexes[0] + 2, pen_y_indexes[1] + 4]
-
-        colour_split = colour_split + 4
-
-    win = GraphWin("Patchwork", win_width, win_height)
-    win.setBackground("white")
-
     for y_increment in range(size):
         for x_increment in range(size):
             if x_increment == colour_split:
@@ -205,8 +180,10 @@ def draw_patchwork(size, colours):
                     y_increment,
                     final_x_index,
                     final_y_index,
-                    pen_x_indexes,
-                    pen_y_indexes,
+                    pen_x_index_lower_bound,
+                    pen_x_index_higher_bound,
+                    pen_y_index_lower_bound,
+                    pen_y_index_higher_bound,
                 )
             elif y_increment > 0 and x_increment >= colour_split:
                 colour = colours[2]
@@ -219,8 +196,10 @@ def draw_patchwork(size, colours):
                     y_increment,
                     final_x_index,
                     final_y_index,
-                    pen_x_indexes,
-                    pen_y_indexes,
+                    pen_x_index_lower_bound,
+                    pen_x_index_higher_bound,
+                    pen_y_index_lower_bound,
+                    pen_y_index_higher_bound,
                 )
             else:
                 colour = colours[0]
@@ -233,8 +212,10 @@ def draw_patchwork(size, colours):
                     y_increment,
                     final_x_index,
                     final_y_index,
-                    pen_x_indexes,
-                    pen_y_indexes,
+                    pen_x_index_lower_bound,
+                    pen_x_index_higher_bound,
+                    pen_y_index_lower_bound,
+                    pen_y_index_higher_bound,
                 )
             x += 100
         colour_split -= 1
@@ -253,8 +234,7 @@ def check_string_is_equal_to_item_in_list(string_check, list_check):
     return valid
 
 
-def check_colour(prev_colours):
-    valid_colours = ["red", "green", "blue", "magenta", "orange", "yellow", "cyan"]
+def check_colour(valid_colours, prev_colours):
     valid_colours_string = ", ".join(valid_colours)
     while True:
         colour = (
@@ -271,8 +251,7 @@ def check_colour(prev_colours):
             return colour
 
 
-def check_size():
-    valid_sizes = ["5", "7", "9"]
+def check_size(valid_sizes):
     valid_sizes_string = ", ".join(valid_sizes)
     while True:
         size = (
@@ -287,23 +266,27 @@ def check_size():
 
 
 def get_inputs():
+    valid_sizes = ["5", "7", "9"]
+    valid_colours = ["red", "green", "blue", "magenta", "orange", "yellow", "cyan"]
     colours = []
 
-    size = check_size()
-    colourOne = check_colour(colours)
+    size = check_size(valid_sizes)
+    colourOne = check_colour(valid_colours, colours)
     colours.append(colourOne)
-    colourTwo = check_colour(colours)
+    colourTwo = check_colour(valid_colours, colours)
     colours.append(colourTwo)
-    colourThree = check_colour(colours)
+    colourThree = check_colour(valid_colours, colours)
     colours.append(colourThree)
 
-    return int(size), colours
+    sizes = [int(size) for size in valid_sizes]
+
+    return int(size), sizes, colours
 
 
 # main
 def main():
-    size, colours = get_inputs()
-    draw_patchwork(size, colours)
+    size, sizes, colours = get_inputs()
+    draw_patchwork(size, sizes, colours)
 
 
 main()
