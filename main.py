@@ -375,6 +375,8 @@ def draw_border(win, top_left_x, top_left_y):
         line.draw(win)
         line.setWidth(5)
 
+    return lines
+
 
 def draw_button(
     win,
@@ -426,6 +428,12 @@ def undraw_buttons(buttons_objects):
         button_object.undraw()
 
 
+def undraw_borders(borders):
+    for border in borders:
+        for line in border:
+            line.undraw()
+
+
 # start in selection mode
 # show ok and close buttons
 # close causes window to close
@@ -444,6 +452,7 @@ def undraw_buttons(buttons_objects):
 def challenge(win, patchwork_objects):
     selected_objects = []
     new_objects = []
+    borders = []
 
     selection_mode = True
     edit_mode = False
@@ -479,9 +488,10 @@ def challenge(win, patchwork_objects):
             patchwork_object = get_patchwork_object(point, patchwork_objects)
             if patchwork_object is not None:
                 selected_objects.append(patchwork_object)
-                draw_border(
+                border = draw_border(
                     win, patchwork_object["top_left_x"], patchwork_object["top_left_y"]
                 )
+                borders.append(border)
 
         while edit_mode:
             undraw_buttons(buttons_objects)
@@ -536,6 +546,10 @@ def challenge(win, patchwork_objects):
                         100,
                     )
                     new_objects.append(block)
+            elif key == "d":
+                selected_objects = []
+                new_objects = []
+                undraw_borders(borders)
 
 
 # main
