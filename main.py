@@ -1,4 +1,4 @@
-from math import sqrt
+from random import randint
 from graphics import GraphWin, Point, Text, Line, Polygon, Rectangle
 
 
@@ -550,6 +550,47 @@ def challenge(win, patchwork_objects, valid_colours):
                 selected_objects = []
                 new_objects = []
                 undraw_borders(borders)
+            elif key == "x":
+                if len(new_objects) > 0:
+                    for new_object in new_objects:
+                        for obj in new_object["objects"]:
+                            obj.undraw()
+                for selected_object in selected_objects:
+                    for obj in selected_object["objects"]:
+                        obj.undraw()
+                    valid_colours_len = len(valid_colours) - 1
+                    block_one = draw_colour_block(
+                        win,
+                        selected_object["top_left_x"],
+                        selected_object["top_left_y"],
+                        valid_colours[randint(0, valid_colours_len)],
+                        50,
+                    )
+                    block_two = draw_colour_block(
+                        win,
+                        selected_object["top_left_x"] + 50,
+                        selected_object["top_left_y"],
+                        valid_colours[randint(0, valid_colours_len)],
+                        50,
+                    )
+                    block_three = draw_colour_block(
+                        win,
+                        selected_object["top_left_x"],
+                        selected_object["top_left_y"] + 50,
+                        valid_colours[randint(0, valid_colours_len)],
+                        50,
+                    )
+                    block_four = draw_colour_block(
+                        win,
+                        selected_object["top_left_x"] + 50,
+                        selected_object["top_left_y"] + 50,
+                        valid_colours[randint(0, valid_colours_len)],
+                        50,
+                    )
+                    new_objects.append(block_one)
+                    new_objects.append(block_two)
+                    new_objects.append(block_three)
+                    new_objects.append(block_four)
             else:
                 for colour in valid_colours:
                     if key == colour[0]:
