@@ -437,6 +437,8 @@ def undraw_borders(borders):
 def draw_border_selected(win, point, patchwork_objects, selected_objects, borders):
     patchwork_object = get_patchwork_object(point, patchwork_objects)
     if patchwork_object is not None:
+        print(patchwork_object["top_left_x"])
+        print(patchwork_object["top_left_y"])
         selected_objects.append(patchwork_object)
         border = draw_border(
             win, patchwork_object["top_left_x"], patchwork_object["top_left_y"]
@@ -541,12 +543,33 @@ def draw_four_colour_block_random_selected(
         new_objects.append(block_four)
 
 
-def colour_selected(key, selected_objects, valid_colours):
+def colour_selected(key, selected_objects, new_objects, valid_colours):
     for colour in valid_colours:
         if key == colour[0]:
+            if len(new_objects) > 0:
+                for new_object in new_objects:
+                    for obj in new_object["objects"]:
+                        obj.setFill(colour)
+                        obj.setOutline(colour)
             for selected_object in selected_objects:
                 for obj in selected_object["objects"]:
                     obj.setFill(colour)
+                    obj.setOutline(colour)
+
+
+def remove_patchwork_from_list(patchwork, patchwork_list):
+    new_list = []
+    for patch_dict in patchwork_list:
+        if (
+            patchwork["top_left_x"] is not patch_dict["top_left_x"]
+            or patchwork["top_left_y"] is not patch_dict["top_left_y"]
+        ):
+            new_list.append(patch_dict)
+        else:
+            print("-------------------------")
+            print(patch_dict["top_left_x"])
+            print(patch_dict["top_left_y"])
+    return new_list
 
 
 def challenge(win, patchwork_objects, valid_colours):
@@ -608,11 +631,17 @@ def challenge(win, patchwork_objects, valid_colours):
                     win, selected_objects, new_objects, valid_colours
                 )
             elif key == "d":
+                for new_obj in new_objects:
+                    patchwork_objects = remove_patchwork_from_list(
+                        new_obj, patchwork_objects
+                    )
+                for new_obj in new_objects:
+                    patchwork_objects.append(new_obj)
                 selected_objects = []
                 new_objects = []
                 undraw_borders(borders)
             else:
-                colour_selected(key, selected_objects, valid_colours)
+                colour_selected(key, selected_objects, new_objects, valid_colours)
 
 
 # main
