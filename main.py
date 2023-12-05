@@ -434,21 +434,6 @@ def undraw_borders(borders):
             line.undraw()
 
 
-# start in selection mode
-# show ok and close buttons
-# close causes window to close
-# click patches to select them
-# click ok to exit selection mode
-# in edit mode:
-# s to go back to selection mode
-# d to deselect all patches
-# p to change all selected patches to penultimate (keep colours same)
-# f to to change all selected patches to final (keep colours same)
-# q to change all selected patches to be a coloured block (keep colours same)
-# the initial letter of any valid colour should change all selected patches to that colour (keep designs same)
-# x is for your own function (creative)
-# note: keys should have no effect in selection mode and mouse clicks should have no effect in edit mode
-# operations should remove or recreate, instead of drawing over existing
 def challenge(win, patchwork_objects, valid_colours):
     selected_objects = []
     new_objects = []
