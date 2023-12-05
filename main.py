@@ -335,30 +335,6 @@ def get_inputs():
 
 
 # challenge functions
-def find_distance_between_two_points(point_one, point_two):
-    distance = sqrt(
-        (point_two.getX() - point_one.getX()) ** 2
-        + (point_two.getY() - point_one.getY()) ** 2
-    )
-    return distance
-
-
-def draw_button(
-    win,
-    top_left_x,
-    top_left_y,
-    block_colour,
-    block_size,
-    text_colour,
-    text_size,
-    text_string,
-):
-    draw_colour_block(win, top_left_x, top_left_y, block_colour, block_size)
-    draw_text_in_block(
-        win, top_left_x, top_left_y, block_size, text_colour, text_string, text_size
-    )
-
-
 def get_patchwork_object(point, patchwork_objects):
     for patchwork_object in patchwork_objects:
         patchwork_object_x_start = patchwork_object["top_left_x"]
@@ -400,6 +376,56 @@ def draw_border(win, top_left_x, top_left_y):
         line.setWidth(5)
 
 
+def draw_button(
+    win,
+    top_left_x,
+    top_left_y,
+    block_colour,
+    block_size,
+    text_colour,
+    text_size,
+    text_string,
+):
+    block = draw_colour_block(win, top_left_x, top_left_y, block_colour, block_size)
+    text = draw_text_in_block(
+        win, top_left_x, top_left_y, block_size, text_colour, text_string, text_size
+    )
+    block_object = block["objects"][0]
+
+    return [block_object, text]
+
+
+def draw_buttons(win):
+    button_size = 30
+    button_colour = "black"
+
+    text_size = 6
+    text_colour = "white"
+
+    ok_button_objects = draw_button(
+        win, 0, 0, button_colour, button_size, text_colour, text_size, "OK"
+    )
+    close_button_objects = draw_button(
+        win,
+        win.getWidth() - button_size,
+        0,
+        button_colour,
+        button_size,
+        text_colour,
+        text_size,
+        "CLOSE",
+    )
+
+    return [ok_button_objects, close_button_objects]
+
+
+def undraw_buttons(buttons_objects):
+    for button_object in buttons_objects[0]:
+        button_object.undraw()
+    for button_object in buttons_objects[1]:
+        button_object.undraw()
+
+
 # start in selection mode
 # show ok and close buttons
 # close causes window to close
@@ -416,66 +442,100 @@ def draw_border(win, top_left_x, top_left_y):
 # note: keys should have no effect in selection mode and mouse clicks should have no effect in edit mode
 # operations should remove or recreate, instead of drawing over existing
 def challenge(win, patchwork_objects):
-    button_size = 30
-    button_colour = "black"
-
-    text_size = 6
-    text_colour = "white"
-
-    draw_button(win, 0, 0, button_colour, button_size, text_colour, text_size, "OK")
-    draw_button(
-        win,
-        win.getWidth() - button_size,
-        0,
-        button_colour,
-        button_size,
-        text_colour,
-        text_size,
-        "CLOSE",
-    )
-
     selected_objects = []
+    new_objects = []
 
     selection_mode = True
-    edit_mode = True
+    edit_mode = False
+    closed = False
 
-    while selection_mode:
-        point = win.getMouse()
+    buttons_objects = draw_buttons(win)
 
-        if (
-            point.getX() > 0
-            and point.getX() <= 30
-            and point.getY() > 0
-            and point.getY() <= 30
-        ):
-            selection_mode = False
-            edit_mode = True
-            break
+    while not closed:
+        while selection_mode:
+            undraw_buttons(buttons_objects)
+            buttons_objects = draw_buttons(win)
+            point = win.getMouse()
 
-        patchwork_object = get_patchwork_object(point, patchwork_objects)
-        if patchwork_object is not None:
-            selected_objects.append(patchwork_object)
-            draw_border(
-                win, patchwork_object["top_left_x"], patchwork_object["top_left_y"]
-            )
+            if (
+                point.getX() > 0
+                and point.getX() <= 30
+                and point.getY() > 0
+                and point.getY() <= 30
+            ):
+                selection_mode = False
+                edit_mode = True
+                break
 
-    while edit_mode:
-        key = win.getKey()
+            if (
+                point.getX() > win.getWidth() - 30
+                and point.getX() <= win.getWidth()
+                and point.getY() > 0
+                and point.getY() <= 30
+            ):
+                closed = True
+                break
 
-        if key == "s":
-            edit_mode = False
-            selection_mode = True
-        elif key == "p":
-            for selected_object in selected_objects:
-                for obj in selected_object["objects"]:
-                    obj.undraw()
-                draw_penultimate(
-                    win,
-                    selected_object["top_left_x"],
-                    selected_object["top_left_y"],
-                    selected_object["colour"],
+            patchwork_object = get_patchwork_object(point, patchwork_objects)
+            if patchwork_object is not None:
+                selected_objects.append(patchwork_object)
+                draw_border(
+                    win, patchwork_object["top_left_x"], patchwork_object["top_left_y"]
                 )
-        print(key)
+
+        while edit_mode:
+            undraw_buttons(buttons_objects)
+            key = win.getKey()
+
+            if key == "s":
+                edit_mode = False
+                selection_mode = True
+            elif key == "p":
+                if len(new_objects) > 0:
+                    for new_object in new_objects:
+                        for obj in new_object["objects"]:
+                            obj.undraw()
+                for selected_object in selected_objects:
+                    for obj in selected_object["objects"]:
+                        obj.undraw()
+                    pen = draw_penultimate(
+                        win,
+                        selected_object["top_left_x"],
+                        selected_object["top_left_y"],
+                        selected_object["colour"],
+                    )
+                    new_objects.append(pen)
+            elif key == "f":
+                if len(new_objects) > 0:
+                    for new_object in new_objects:
+                        for obj in new_object["objects"]:
+                            obj.undraw()
+                for selected_object in selected_objects:
+                    for obj in selected_object["objects"]:
+                        obj.undraw()
+                    final = draw_final(
+                        win,
+                        selected_object["top_left_x"],
+                        selected_object["top_left_y"],
+                        selected_object["colour"],
+                    )
+                    new_objects.append(final)
+            elif key == "q":
+                if len(new_objects) > 0:
+                    for new_object in new_objects:
+                        for obj in new_object["objects"]:
+                            obj.undraw()
+                for selected_object in selected_objects:
+                    for obj in selected_object["objects"]:
+                        obj.undraw()
+                    block = draw_colour_block(
+                        win,
+                        selected_object["top_left_x"],
+                        selected_object["top_left_y"],
+                        selected_object["colour"],
+                        100,
+                    )
+                    new_objects.append(block)
 
 
 # main
