@@ -507,6 +507,13 @@ def draw_four_colour_block_random_selected(
         for obj in selected_object["objects"]:
             obj.undraw()
         valid_colours_len = len(valid_colours) - 1
+        colour_block = {
+            "top_left_x": selected_object["top_left_x"],
+            "top_left_y": selected_object["top_left_y"],
+            "colour": valid_colours[randint(0, valid_colours_len)],
+            "objects": [],
+        }
+
         block_one = draw_colour_block(
             win,
             selected_object["top_left_x"],
@@ -535,10 +542,11 @@ def draw_four_colour_block_random_selected(
             valid_colours[randint(0, valid_colours_len)],
             50,
         )
-        new_objects.append(block_one)
-        new_objects.append(block_two)
-        new_objects.append(block_three)
-        new_objects.append(block_four)
+        colour_block["objects"].append(block_one["objects"][0])
+        colour_block["objects"].append(block_two["objects"][0])
+        colour_block["objects"].append(block_three["objects"][0])
+        colour_block["objects"].append(block_four["objects"][0])
+        new_objects.append(colour_block)
 
 
 def colour_selected(key, selected_objects, new_objects, valid_colours):
