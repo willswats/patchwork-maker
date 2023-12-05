@@ -60,7 +60,7 @@ def draw_triangle_row_odd(win, colour, x, y):
 
 
 def draw_penultimate(win, x, y, colour):
-    pen = {"top_left_x": x, "top_left_y": y, "objects": []}
+    pen = {"top_left_x": x, "top_left_y": y, "colour": colour, "objects": []}
 
     initial_x = x + 10
 
@@ -105,7 +105,7 @@ def draw_text_in_block(win, x, y, block_size, colour, text_string, text_size):
 
 
 def draw_final(win, x, y, colour):
-    final = {"top_left_x": x, "top_left_y": y, "objects": []}
+    final = {"top_left_x": x, "top_left_y": y, "colour": colour, "objects": []}
 
     block_size = 20
 
@@ -139,7 +139,12 @@ def draw_final(win, x, y, colour):
 
 # draw_patchwork functions
 def draw_colour_block(win, top_left_x, top_left_y, colour, size):
-    colour_block = {"top_left_x": top_left_x, "top_left_y": top_left_y, "objects": []}
+    colour_block = {
+        "top_left_x": top_left_x,
+        "top_left_y": top_left_y,
+        "colour": colour,
+        "objects": [],
+    }
     rectangle = Rectangle(
         Point(top_left_x, top_left_y),
         Point(top_left_x + size, top_left_y + size),
@@ -370,6 +375,31 @@ def get_patchwork_object(point, patchwork_objects):
             return patchwork_object
 
 
+def draw_border(win, top_left_x, top_left_y):
+    lines = []
+
+    lineTopLeftToTopRight = Line(
+        Point(top_left_x, top_left_y), Point(top_left_x + 100, top_left_y)
+    )
+    lines.append(lineTopLeftToTopRight)
+    lineTopLeftToBottomLeft = Line(
+        Point(top_left_x, top_left_y), Point(top_left_x, top_left_y + 100)
+    )
+    lines.append(lineTopLeftToBottomLeft)
+    lineTopRightToBottomRight = Line(
+        Point(top_left_x + 100, top_left_y), Point(top_left_x + 100, top_left_y + 100)
+    )
+    lines.append(lineTopRightToBottomRight)
+    lineBottomLeftToBottomRight = Line(
+        Point(top_left_x, top_left_y + 100), Point(top_left_x + 100, top_left_y + 100)
+    )
+    lines.append(lineBottomLeftToBottomRight)
+
+    for line in lines:
+        line.draw(win)
+        line.setWidth(5)
+
+
 # start in selection mode
 # show ok and close buttons
 # close causes window to close
@@ -404,12 +434,48 @@ def challenge(win, patchwork_objects):
         "CLOSE",
     )
 
-    while True:
+    selected_objects = []
+
+    selection_mode = True
+    edit_mode = True
+
+    while selection_mode:
         point = win.getMouse()
+
+        if (
+            point.getX() > 0
+            and point.getX() <= 30
+            and point.getY() > 0
+            and point.getY() <= 30
+        ):
+            selection_mode = False
+            edit_mode = True
+            break
+
         patchwork_object = get_patchwork_object(point, patchwork_objects)
         if patchwork_object is not None:
-            for obj in patchwork_object["objects"]:
-                obj.undraw()
+            selected_objects.append(patchwork_object)
+            draw_border(
+                win, patchwork_object["top_left_x"], patchwork_object["top_left_y"]
+            )
+
+    while edit_mode:
+        key = win.getKey()
+
+        if key == "s":
+            edit_mode = False
+            selection_mode = True
+        elif key == "p":
+            for selected_object in selected_objects:
+                for obj in selected_object["objects"]:
+                    obj.undraw()
+                draw_penultimate(
+                    win,
+                    selected_object["top_left_x"],
+                    selected_object["top_left_y"],
+                    selected_object["colour"],
+                )
+        print(key)
 
 
 # main
