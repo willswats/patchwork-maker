@@ -26,40 +26,58 @@ def draw_triangle(win, colour, top_x, top_y, shape):
     polygon.setFill(colour)
     polygon.setOutline(colour)
     polygon.draw(win)
+    return polygon
 
 
 def draw_triangle_row(win, colour, x, y):
+    triangles = []
     for _ in range(5):
-        draw_triangle(win, colour, x, y, "")
+        triangle = draw_triangle(win, colour, x, y, "")
+        triangles.append(triangle)
         x += 20
+    return triangles
 
 
 def draw_triangle_row_odd(win, colour, x, y):
+    triangles = []
     start = 0
     end = 5
 
     x = x - 10
     for x_increment in range(6):
         if x_increment == start:
-            draw_triangle(win, colour, x, y, "half_right")
+            triangle = draw_triangle(win, colour, x, y, "half_right")
+            triangles.append(triangle)
         elif x_increment == end:
-            draw_triangle(win, colour, x, y, "half_left")
+            triangle = draw_triangle(win, colour, x, y, "half_left")
+            triangles.append(triangle)
         else:
-            draw_triangle(win, colour, x, y, "")
+            triangle = draw_triangle(win, colour, x, y, "")
+            triangles.append(triangle)
         x += 20
+
+    return triangles
 
 
 def draw_penultimate(win, x, y, colour):
+    pen = {"top_left_x": x, "top_left_y": y, "objects": []}
+
     initial_x = x + 10
 
     x = initial_x
     for y_increment in range(5):
         if y_increment % 2 == 0:
-            draw_triangle_row(win, colour, x, y)
+            triangles = draw_triangle_row(win, colour, x, y)
+            for triangle in triangles:
+                pen["objects"].append(triangle)
         else:
-            draw_triangle_row_odd(win, colour, x, y)
+            triangles = draw_triangle_row_odd(win, colour, x, y)
+            for triangle in triangles:
+                pen["objects"].append(triangle)
         x = initial_x
         y += 20
+
+    return pen
 
 
 # draw_final functions
@@ -67,12 +85,14 @@ def draw_line_row(win, y, initial_x, colour):
     line_row = Line(Point(initial_x, y + 20), Point(initial_x + 100, y + 20))
     line_row.setOutline(colour)
     line_row.draw(win)
+    return line_row
 
 
 def draw_line_column(win, x, initial_y, colour):
     line_column = Line(Point(x + 20, initial_y), Point(x + 20, initial_y + 100))
     line_column.setOutline(colour)
     line_column.draw(win)
+    return line_column
 
 
 def draw_text_in_block(win, x, y, block_size, colour, text_string, text_size):
@@ -81,9 +101,12 @@ def draw_text_in_block(win, x, y, block_size, colour, text_string, text_size):
     text.setFill(colour)
     text.setSize(text_size)
     text.draw(win)
+    return text
 
 
 def draw_final(win, x, y, colour):
+    final = {"top_left_x": x, "top_left_y": y, "objects": []}
+
     block_size = 20
 
     repetitions = 5
@@ -96,19 +119,27 @@ def draw_final(win, x, y, colour):
 
     for y_increment in range(repetitions):
         if y_increment < repetitions - 1:
-            draw_line_row(win, y, initial_x, colour)
+            line_row = draw_line_row(win, y, initial_x, colour)
+            final["objects"].append(line_row)
         for x_increment in range(repetitions):
-            draw_text_in_block(win, x, y, block_size, colour, text, text_size)
+            text_in_block = draw_text_in_block(
+                win, x, y, block_size, colour, text, text_size
+            )
+            final["objects"].append(text_in_block)
             if x_increment < repetitions - 1:
-                draw_line_column(win, x, initial_y, colour)
+                line_column = draw_line_column(win, x, initial_y, colour)
+                final["objects"].append(line_column)
 
             x += block_size
         x = initial_x
         y += block_size
 
+    return final
+
 
 # draw_patchwork functions
 def draw_colour_block(win, top_left_x, top_left_y, colour, size):
+    colour_block = {"top_left_x": top_left_x, "top_left_y": top_left_y, "objects": []}
     rectangle = Rectangle(
         Point(top_left_x, top_left_y),
         Point(top_left_x + size, top_left_y + size),
@@ -116,6 +147,8 @@ def draw_colour_block(win, top_left_x, top_left_y, colour, size):
     rectangle.setFill(colour)
     rectangle.setOutline(colour)
     rectangle.draw(win)
+    colour_block["objects"].append(rectangle)
+    return colour_block
 
 
 def choose_draw(
@@ -140,11 +173,14 @@ def choose_draw(
         and y_increment >= pen_y_index_lower_bound
         and y_increment <= pen_y_index_higher_bound
     ):
-        draw_penultimate(win, x, y, colour)
+        pen_objects = draw_penultimate(win, x, y, colour)
+        return pen_objects
     elif x_increment <= final_x_index and y_increment >= final_y_index:
-        draw_final(win, x, y, colour)
+        final_objects = draw_final(win, x, y, colour)
+        return final_objects
     else:
-        draw_colour_block(win, x, y, colour, colour_block_size)
+        colour_block_objects = draw_colour_block(win, x, y, colour, colour_block_size)
+        return colour_block_objects
 
 
 def draw_patchwork(size, sizes, colours):
@@ -166,6 +202,8 @@ def draw_patchwork(size, sizes, colours):
     win = GraphWin("Patchwork", win_width, win_height)
     win.setBackground("white")
 
+    patchwork_objects = []
+
     x = 0
     y = 0
     initial_x = x
@@ -173,7 +211,7 @@ def draw_patchwork(size, sizes, colours):
         for x_increment in range(size):
             if x_increment == colour_split:
                 colour = colours[1]
-                choose_draw(
+                objects = choose_draw(
                     win,
                     x,
                     y,
@@ -187,9 +225,10 @@ def draw_patchwork(size, sizes, colours):
                     pen_y_index_lower_bound,
                     pen_y_index_higher_bound,
                 )
+                patchwork_objects.append(objects)
             elif y_increment > 0 and x_increment >= colour_split:
                 colour = colours[2]
-                choose_draw(
+                objects = choose_draw(
                     win,
                     x,
                     y,
@@ -203,9 +242,10 @@ def draw_patchwork(size, sizes, colours):
                     pen_y_index_lower_bound,
                     pen_y_index_higher_bound,
                 )
+                patchwork_objects.append(objects)
             else:
                 colour = colours[0]
-                choose_draw(
+                objects = choose_draw(
                     win,
                     x,
                     y,
@@ -219,12 +259,13 @@ def draw_patchwork(size, sizes, colours):
                     pen_y_index_lower_bound,
                     pen_y_index_higher_bound,
                 )
+                patchwork_objects.append(objects)
             x += 100
         colour_split -= 1
         x = initial_x
         y += 100
 
-    challenge(win)
+    challenge(win, patchwork_objects)
 
     win.getMouse()
 
@@ -313,6 +354,22 @@ def draw_button(
     )
 
 
+def get_patchwork_object(point, patchwork_objects):
+    for patchwork_object in patchwork_objects:
+        patchwork_object_x_start = patchwork_object["top_left_x"]
+        patchwork_object_x_end = patchwork_object["top_left_x"] + 100
+        patchwork_object_y_start = patchwork_object["top_left_y"]
+        patchwork_object_y_end = patchwork_object["top_left_y"] + 100
+
+        if (
+            point.getX() > patchwork_object_x_start
+            and point.getX() < patchwork_object_x_end
+            and point.getY() > patchwork_object_y_start
+            and point.getY() < patchwork_object_y_end
+        ):
+            return patchwork_object
+
+
 # start in selection mode
 # show ok and close buttons
 # close causes window to close
@@ -328,7 +385,7 @@ def draw_button(
 # x is for your own function (creative)
 # note: keys should have no effect in selection mode and mouse clicks should have no effect in edit mode
 # operations should remove or recreate, instead of drawing over existing
-def challenge(win):
+def challenge(win, patchwork_objects):
     button_size = 30
     button_colour = "black"
 
@@ -348,7 +405,11 @@ def challenge(win):
     )
 
     while True:
-        win.getMouse()
+        point = win.getMouse()
+        patchwork_object = get_patchwork_object(point, patchwork_objects)
+        if patchwork_object is not None:
+            for obj in patchwork_object["objects"]:
+                obj.undraw()
 
 
 # main
