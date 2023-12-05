@@ -8,5 +8,4 @@
 ## Bugs
 
 - [ ] Using the custom block, selecting it will select the individual small blocks
-- [ ] Close only works on second click
 - [ ] Sometimes patterns are still overlapped when selecting and deselecting repeatedly
