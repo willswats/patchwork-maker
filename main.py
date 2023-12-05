@@ -188,7 +188,7 @@ def choose_draw(
         return colour_block_objects
 
 
-def draw_patchwork(size, sizes, colours):
+def draw_patchwork(size, sizes, colours, valid_colours):
     size_index = sizes.index(size)
 
     size_decrement = size_index + 3
@@ -270,7 +270,7 @@ def draw_patchwork(size, sizes, colours):
         x = initial_x
         y += 100
 
-    challenge(win, patchwork_objects)
+    challenge(win, patchwork_objects, valid_colours)
 
     win.getMouse()
 
@@ -331,7 +331,7 @@ def get_inputs():
 
     sizes = [int(size) for size in valid_sizes]
 
-    return int(size), sizes, colours
+    return int(size), sizes, colours, valid_colours
 
 
 # challenge functions
@@ -449,7 +449,7 @@ def undraw_borders(borders):
 # x is for your own function (creative)
 # note: keys should have no effect in selection mode and mouse clicks should have no effect in edit mode
 # operations should remove or recreate, instead of drawing over existing
-def challenge(win, patchwork_objects):
+def challenge(win, patchwork_objects, valid_colours):
     selected_objects = []
     new_objects = []
     borders = []
@@ -550,12 +550,18 @@ def challenge(win, patchwork_objects):
                 selected_objects = []
                 new_objects = []
                 undraw_borders(borders)
+            else:
+                for colour in valid_colours:
+                    if key == colour[0]:
+                        for selected_object in selected_objects:
+                            for obj in selected_object["objects"]:
+                                obj.setFill(colour)
 
 
 # main
 def main():
-    size, sizes, colours = get_inputs()
-    draw_patchwork(size, sizes, colours)
+    size, sizes, colours, valid_colours = get_inputs()
+    draw_patchwork(size, sizes, colours, valid_colours)
 
 
 main()
