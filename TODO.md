@@ -7,7 +7,5 @@
 
 ## Bugs
 
-- [ ] Selecting, changing a pattern, then deselecting, selecting, and changing a pattern again does not remove the old pattern
-- [ ] Can't change colour of patterns that have been changed
 - [ ] Close only works on second click
-- [ ] Border becomes thin upon changing to coloured block
+- [ ] Sometimes patterns are still overlapped when selecting and deselecting repeatedly
