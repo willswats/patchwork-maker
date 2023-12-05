@@ -272,8 +272,6 @@ def draw_patchwork(size, sizes, colours, valid_colours):
 
     challenge(win, patchwork_objects, valid_colours)
 
-    win.getMouse()
-
 
 # get_inputs functions
 def check_string_is_equal_to_item_in_list(string_check, list_check):
@@ -565,10 +563,6 @@ def remove_patchwork_from_list(patchwork, patchwork_list):
             or patchwork["top_left_y"] is not patch_dict["top_left_y"]
         ):
             new_list.append(patch_dict)
-        else:
-            print("-------------------------")
-            print(patch_dict["top_left_x"])
-            print(patch_dict["top_left_y"])
     return new_list
 
 
