@@ -442,11 +442,8 @@ def draw_border_selected(win, point, patchwork_objects, selected_objects, border
         borders.append(border)
 
 
-def draw_final_selected(win, selected_objects, new_objects):
-    if len(new_objects) > 0:
-        for new_object in new_objects:
-            for obj in new_object["objects"]:
-                obj.undraw()
+def draw_final_selected(win, selected_objects):
+    finals = []
     for selected_object in selected_objects:
         for obj in selected_object["objects"]:
             obj.undraw()
@@ -456,14 +453,12 @@ def draw_final_selected(win, selected_objects, new_objects):
             selected_object["top_left_y"],
             selected_object["colour"],
         )
-        new_objects.append(final)
+        finals.append(final)
+    return finals
 
 
-def draw_pen_selected(win, selected_objects, new_objects):
-    if len(new_objects) > 0:
-        for new_object in new_objects:
-            for obj in new_object["objects"]:
-                obj.undraw()
+def draw_pen_selected(win, selected_objects):
+    pens = []
     for selected_object in selected_objects:
         for obj in selected_object["objects"]:
             obj.undraw()
@@ -473,14 +468,12 @@ def draw_pen_selected(win, selected_objects, new_objects):
             selected_object["top_left_y"],
             selected_object["colour"],
         )
-        new_objects.append(pen)
+        pens.append(pen)
+    return pens
 
 
-def draw_colour_block_selected(win, selected_objects, new_objects):
-    if len(new_objects) > 0:
-        for new_object in new_objects:
-            for obj in new_object["objects"]:
-                obj.undraw()
+def draw_colour_block_selected(win, selected_objects):
+    colour_blocks = []
     for selected_object in selected_objects:
         for obj in selected_object["objects"]:
             obj.undraw()
@@ -491,16 +484,12 @@ def draw_colour_block_selected(win, selected_objects, new_objects):
             selected_object["colour"],
             100,
         )
-        new_objects.append(block)
+        colour_blocks.append(block)
+    return colour_blocks
 
 
-def draw_four_colour_block_random_selected(
-    win, selected_objects, new_objects, valid_colours
-):
-    if len(new_objects) > 0:
-        for new_object in new_objects:
-            for obj in new_object["objects"]:
-                obj.undraw()
+def draw_four_colour_block_random_selected(win, selected_objects, valid_colours):
+    four_colour_blocks = []
     for selected_object in selected_objects:
         for obj in selected_object["objects"]:
             obj.undraw()
@@ -540,21 +529,19 @@ def draw_four_colour_block_random_selected(
             valid_colours[randint(0, valid_colours_len)],
             50,
         )
+
         colour_block["objects"].append(block_one["objects"][0])
         colour_block["objects"].append(block_two["objects"][0])
         colour_block["objects"].append(block_three["objects"][0])
         colour_block["objects"].append(block_four["objects"][0])
-        new_objects.append(colour_block)
+
+        four_colour_blocks.append(colour_block)
+    return four_colour_blocks
 
 
-def colour_selected(key, selected_objects, new_objects, valid_colours):
+def colour_selected(key, selected_objects, valid_colours):
     for colour in valid_colours:
         if key == colour[0]:
-            if len(new_objects) > 0:
-                for new_object in new_objects:
-                    for obj in new_object["objects"]:
-                        obj.setFill(colour)
-                        obj.setOutline(colour)
             for selected_object in selected_objects:
                 for obj in selected_object["objects"]:
                     obj.setFill(colour)
@@ -576,7 +563,6 @@ def remove_patchwork_from_list(patchwork, patchwork_list):
 
 def challenge(win, patchwork_objects, valid_colours):
     selected_objects = []
-    new_objects = []
     borders = []
 
     selection_mode = True
@@ -623,27 +609,43 @@ def challenge(win, patchwork_objects, valid_colours):
                 edit_mode = False
                 selection_mode = True
             elif key == "p":
-                draw_pen_selected(win, selected_objects, new_objects)
-            elif key == "f":
-                draw_final_selected(win, selected_objects, new_objects)
-            elif key == "q":
-                draw_colour_block_selected(win, selected_objects, new_objects)
-            elif key == "x":
-                draw_four_colour_block_random_selected(
-                    win, selected_objects, new_objects, valid_colours
-                )
-            elif key == "d":
-                for new_obj in new_objects:
+                pens = draw_pen_selected(win, selected_objects)
+                for pen in pens:
+                    # Remove from selected objects
+                    # Update selected objects
+                    # (for colors)
                     patchwork_objects = remove_patchwork_from_list(
-                        new_obj, patchwork_objects
+                        pen, patchwork_objects
                     )
-                for new_obj in new_objects:
-                    patchwork_objects.append(new_obj)
+                    patchwork_objects.append(pen)
+            elif key == "f":
+                finals = draw_final_selected(win, selected_objects)
+                for final in finals:
+                    patchwork_objects = remove_patchwork_from_list(
+                        final, patchwork_objects
+                    )
+                    patchwork_objects.append(final)
+            elif key == "q":
+                colour_blocks = draw_colour_block_selected(win, selected_objects)
+                for colour_block in colour_blocks:
+                    patchwork_objects = remove_patchwork_from_list(
+                        colour_block, patchwork_objects
+                    )
+                    patchwork_objects.append(colour_block)
+            elif key == "x":
+                four_colour_blocks = draw_four_colour_block_random_selected(
+                    win, selected_objects, valid_colours
+                )
+                for four_colour_block in four_colour_blocks:
+                    patchwork_objects = remove_patchwork_from_list(
+                        four_colour_block, patchwork_objects
+                    )
+                    patchwork_objects.append(four_colour_block)
+            elif key == "d":
                 selected_objects = []
-                new_objects = []
                 undraw_borders(borders)
             else:
-                colour_selected(key, selected_objects, new_objects, valid_colours)
+                colour_selected(key, selected_objects, valid_colours)
 
 
 # main
