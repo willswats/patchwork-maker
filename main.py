@@ -3,25 +3,25 @@ from graphics import GraphWin, Point, Text, Line, Polygon, Rectangle
 
 
 # draw_penultimate functions
-def draw_triangle(win, colour, top_left_x, top_left_y, shape):
+def draw_triangle(win, colour, x, y, shape):
     offset_x = 10
     offset_y = 20
     polygon = Polygon(
-        Point(top_left_x, top_left_y),
-        Point(top_left_x - offset_x, top_left_y + offset_y),
-        Point(top_left_x + offset_x, top_left_y + offset_y),
+        Point(x, y),
+        Point(x - offset_x, y + offset_y),
+        Point(x + offset_x, y + offset_y),
     )
     if shape == "half_left":
         polygon = Polygon(
-            Point(top_left_x, top_left_y),
-            Point(top_left_x - offset_x, top_left_y + offset_y),
-            Point(top_left_x, top_left_y + offset_y),
+            Point(x, y),
+            Point(x - offset_x, y + offset_y),
+            Point(x, y + offset_y),
         )
     elif shape == "half_right":
         polygon = Polygon(
-            Point(top_left_x, top_left_y),
-            Point(top_left_x, top_left_y + offset_y),
-            Point(top_left_x + offset_x, top_left_y + offset_y),
+            Point(x, y),
+            Point(x, y + offset_y),
+            Point(x + offset_x, y + offset_y),
         )
     polygon.setFill(colour)
     polygon.setOutline(colour)
@@ -60,7 +60,7 @@ def draw_triangle_row_odd(win, colour, x, y):
 
 
 def draw_penultimate(win, x, y, colour):
-    pen = {"top_left_x": x, "top_left_y": y, "colour": colour, "objects": []}
+    pen = {"x": x, "y": y, "colour": colour, "objects": []}
 
     initial_x = x + 10
 
@@ -105,7 +105,7 @@ def draw_text_in_block(win, x, y, block_size, colour, text_string, text_size):
 
 
 def draw_final(win, x, y, colour):
-    final = {"top_left_x": x, "top_left_y": y, "colour": colour, "objects": []}
+    final = {"x": x, "y": y, "colour": colour, "objects": []}
 
     block_size = 20
 
@@ -138,16 +138,16 @@ def draw_final(win, x, y, colour):
 
 
 # draw_patchwork functions
-def draw_colour_block(win, top_left_x, top_left_y, colour, size):
+def draw_colour_block(win, x, y, colour, size):
     colour_block = {
-        "top_left_x": top_left_x,
-        "top_left_y": top_left_y,
+        "x": x,
+        "y": y,
         "colour": colour,
         "objects": [],
     }
     rectangle = Rectangle(
-        Point(top_left_x, top_left_y),
-        Point(top_left_x + size, top_left_y + size),
+        Point(x, y),
+        Point(x + size, y + size),
     )
     rectangle.setFill(colour)
     rectangle.setOutline(colour)
@@ -335,10 +335,10 @@ def get_inputs():
 # challenge functions
 def get_patchwork_object(point, patchwork_objects):
     for patchwork_object in patchwork_objects:
-        patchwork_object_x_start = patchwork_object["top_left_x"]
-        patchwork_object_x_end = patchwork_object["top_left_x"] + 100
-        patchwork_object_y_start = patchwork_object["top_left_y"]
-        patchwork_object_y_end = patchwork_object["top_left_y"] + 100
+        patchwork_object_x_start = patchwork_object["x"]
+        patchwork_object_x_end = patchwork_object["x"] + 100
+        patchwork_object_y_start = patchwork_object["y"]
+        patchwork_object_y_end = patchwork_object["y"] + 100
 
         if (
             point.getX() > patchwork_object_x_start
@@ -349,24 +349,16 @@ def get_patchwork_object(point, patchwork_objects):
             return patchwork_object
 
 
-def draw_border(win, top_left_x, top_left_y):
+def draw_border(win, x, y):
     lines = []
 
-    lineTopLeftToTopRight = Line(
-        Point(top_left_x, top_left_y), Point(top_left_x + 100, top_left_y)
-    )
+    lineTopLeftToTopRight = Line(Point(x, y), Point(x + 100, y))
     lines.append(lineTopLeftToTopRight)
-    lineTopLeftToBottomLeft = Line(
-        Point(top_left_x, top_left_y), Point(top_left_x, top_left_y + 100)
-    )
+    lineTopLeftToBottomLeft = Line(Point(x, y), Point(x, y + 100))
     lines.append(lineTopLeftToBottomLeft)
-    lineTopRightToBottomRight = Line(
-        Point(top_left_x + 100, top_left_y), Point(top_left_x + 100, top_left_y + 100)
-    )
+    lineTopRightToBottomRight = Line(Point(x + 100, y), Point(x + 100, y + 100))
     lines.append(lineTopRightToBottomRight)
-    lineBottomLeftToBottomRight = Line(
-        Point(top_left_x, top_left_y + 100), Point(top_left_x + 100, top_left_y + 100)
-    )
+    lineBottomLeftToBottomRight = Line(Point(x, y + 100), Point(x + 100, y + 100))
     lines.append(lineBottomLeftToBottomRight)
 
     for line in lines:
@@ -378,17 +370,17 @@ def draw_border(win, top_left_x, top_left_y):
 
 def draw_button(
     win,
-    top_left_x,
-    top_left_y,
+    x,
+    y,
     block_colour,
     block_size,
     text_colour,
     text_size,
     text_string,
 ):
-    block = draw_colour_block(win, top_left_x, top_left_y, block_colour, block_size)
+    block = draw_colour_block(win, x, y, block_colour, block_size)
     text = draw_text_in_block(
-        win, top_left_x, top_left_y, block_size, text_colour, text_string, text_size
+        win, x, y, block_size, text_colour, text_string, text_size
     )
     block_object = block["objects"][0]
 
@@ -436,9 +428,7 @@ def draw_border_selected(win, point, patchwork_objects, selected_objects, border
     patchwork_object = get_patchwork_object(point, patchwork_objects)
     if patchwork_object is not None:
         selected_objects.append(patchwork_object)
-        border = draw_border(
-            win, patchwork_object["top_left_x"], patchwork_object["top_left_y"]
-        )
+        border = draw_border(win, patchwork_object["x"], patchwork_object["y"])
         borders.append(border)
 
 
@@ -449,8 +439,8 @@ def draw_final_selected(win, selected_objects):
             obj.undraw()
         final = draw_final(
             win,
-            selected_object["top_left_x"],
-            selected_object["top_left_y"],
+            selected_object["x"],
+            selected_object["y"],
             selected_object["colour"],
         )
         finals.append(final)
@@ -464,8 +454,8 @@ def draw_pen_selected(win, selected_objects):
             obj.undraw()
         pen = draw_penultimate(
             win,
-            selected_object["top_left_x"],
-            selected_object["top_left_y"],
+            selected_object["x"],
+            selected_object["y"],
             selected_object["colour"],
         )
         pens.append(pen)
@@ -479,8 +469,8 @@ def draw_colour_block_selected(win, selected_objects):
             obj.undraw()
         block = draw_colour_block(
             win,
-            selected_object["top_left_x"],
-            selected_object["top_left_y"],
+            selected_object["x"],
+            selected_object["y"],
             selected_object["colour"],
             100,
         )
@@ -495,37 +485,37 @@ def draw_four_colour_block_random_selected(win, selected_objects, valid_colours)
             obj.undraw()
         valid_colours_len = len(valid_colours) - 1
         colour_block = {
-            "top_left_x": selected_object["top_left_x"],
-            "top_left_y": selected_object["top_left_y"],
+            "x": selected_object["x"],
+            "y": selected_object["y"],
             "colour": valid_colours[randint(0, valid_colours_len)],
             "objects": [],
         }
 
         block_one = draw_colour_block(
             win,
-            selected_object["top_left_x"],
-            selected_object["top_left_y"],
+            selected_object["x"],
+            selected_object["y"],
             valid_colours[randint(0, valid_colours_len)],
             50,
         )
         block_two = draw_colour_block(
             win,
-            selected_object["top_left_x"] + 50,
-            selected_object["top_left_y"],
+            selected_object["x"] + 50,
+            selected_object["y"],
             valid_colours[randint(0, valid_colours_len)],
             50,
         )
         block_three = draw_colour_block(
             win,
-            selected_object["top_left_x"],
-            selected_object["top_left_y"] + 50,
+            selected_object["x"],
+            selected_object["y"] + 50,
             valid_colours[randint(0, valid_colours_len)],
             50,
         )
         block_four = draw_colour_block(
             win,
-            selected_object["top_left_x"] + 50,
-            selected_object["top_left_y"] + 50,
+            selected_object["x"] + 50,
+            selected_object["y"] + 50,
             valid_colours[randint(0, valid_colours_len)],
             50,
         )
@@ -551,10 +541,7 @@ def colour_selected(key, selected_objects, valid_colours):
 def remove_patchwork_from_list(patchwork, patchwork_list):
     new_list = []
     for patch_dict in patchwork_list:
-        if (
-            patchwork["top_left_x"] == patch_dict["top_left_x"]
-            and patchwork["top_left_y"] == patch_dict["top_left_y"]
-        ):
+        if patchwork["x"] == patch_dict["x"] and patchwork["y"] == patch_dict["y"]:
             pass
         else:
             new_list.append(patch_dict)
