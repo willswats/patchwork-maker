@@ -388,37 +388,42 @@ def draw_button(
     )
 
     block_object = block["objects"][0]
-    return [block_object, text]
+    button = {
+        "x": block["x"],
+        "y": block["y"],
+        "colour": block_colour,
+        "objects": [block_object, text],
+    }
+
+    return button
 
 
-def draw_buttons(win):
-    button_size = 30
+def draw_buttons(win, size):
     button_colour = "black"
-
     text_size = 6
     text_colour = "white"
 
-    ok_button_objects = draw_button(
-        win, 0, 0, button_colour, button_size, text_colour, text_size, "OK"
+    ok_button = draw_button(
+        win, 0, 0, button_colour, size, text_colour, text_size, "OK"
     )
-    close_button_objects = draw_button(
+    close_button = draw_button(
         win,
-        win.getWidth() - button_size,
+        win.getWidth() - size,
         0,
         button_colour,
-        button_size,
+        size,
         text_colour,
         text_size,
         "CLOSE",
     )
 
-    return [ok_button_objects, close_button_objects]
+    return [ok_button, close_button]
 
 
-def undraw_buttons(buttons_objects):
-    for button_object in buttons_objects[0]:
+def undraw_buttons(buttons):
+    for button_object in buttons[0]["objects"]:
         button_object.undraw()
-    for button_object in buttons_objects[1]:
+    for button_object in buttons[1]["objects"]:
         button_object.undraw()
 
 
@@ -558,7 +563,7 @@ def colour_selected(key, selected_objects, valid_colours):
                     obj.setOutline(colour)
 
 
-def remove_patchwork_from_list(patchwork, patchwork_list):
+def remove_identical_x_and_y_patchwork_from_list(patchwork, patchwork_list):
     new_list = []
     for patch_obj in patchwork_list:
         if patchwork["x"] == patch_obj["x"] and patchwork["y"] == patch_obj["y"]:
@@ -566,6 +571,21 @@ def remove_patchwork_from_list(patchwork, patchwork_list):
         else:
             new_list.append(patch_obj)
     return new_list
+
+
+def update_patchwork_objects_and_selected_objects_lists(
+    new_patchworks, patchwork_objects, selected_objects
+):
+    for new_patchwork in new_patchworks:
+        patchwork_objects = remove_identical_x_and_y_patchwork_from_list(
+            new_patchwork, patchwork_objects
+        )
+        patchwork_objects.append(new_patchwork)
+        selected_objects = remove_identical_x_and_y_patchwork_from_list(
+            new_patchwork, selected_objects
+        )
+        selected_objects.append(new_patchwork)
+    return patchwork_objects, selected_objects
 
 
 def challenge(win, patchwork_objects, valid_colours):
@@ -576,30 +596,31 @@ def challenge(win, patchwork_objects, valid_colours):
     edit_mode = False
     closed = False
 
-    buttons_objects = draw_buttons(win)
+    buttons_size = 30
+    buttons = draw_buttons(win, buttons_size)
 
     while not closed:
         while selection_mode:
-            undraw_buttons(buttons_objects)
-            buttons_objects = draw_buttons(win)
+            undraw_buttons(buttons)
+            buttons = draw_buttons(win, buttons_size)
 
             point = win.getMouse()
 
             if (
-                point.getX() > 0
-                and point.getX() <= 30
-                and point.getY() > 0
-                and point.getY() <= 30
+                point.getX() > buttons[0]["x"]
+                and point.getX() <= buttons[0]["x"] + buttons_size
+                and point.getY() > buttons[0]["y"]
+                and point.getY() <= buttons[0]["y"] + buttons_size
             ):
                 selection_mode = False
                 edit_mode = True
                 break
 
             if (
-                point.getX() > win.getWidth() - 30
-                and point.getX() <= win.getWidth()
-                and point.getY() > 0
-                and point.getY() <= 30
+                point.getX() > buttons[1]["x"]
+                and point.getX() <= buttons[1]["x"] + buttons_size
+                and point.getY() > buttons[1]["y"]
+                and point.getY() <= buttons[1]["y"] + buttons_size
             ):
                 closed = True
                 break
@@ -609,7 +630,7 @@ def challenge(win, patchwork_objects, valid_colours):
             )
 
         while edit_mode:
-            undraw_buttons(buttons_objects)
+            undraw_buttons(buttons)
             key = win.getKey()
 
             if key == "s":
@@ -617,48 +638,38 @@ def challenge(win, patchwork_objects, valid_colours):
                 selection_mode = True
             elif key == "p":
                 pens = draw_pen_selected(win, selected_objects)
-                for pen in pens:
-                    patchwork_objects = remove_patchwork_from_list(
-                        pen, patchwork_objects
-                    )
-                    patchwork_objects.append(pen)
-                    selected_objects = remove_patchwork_from_list(pen, selected_objects)
-                    selected_objects.append(pen)
+                (
+                    patchwork_objects,
+                    selected_objects,
+                ) = update_patchwork_objects_and_selected_objects_lists(
+                    pens, patchwork_objects, selected_objects
+                )
             elif key == "f":
                 finals = draw_final_selected(win, selected_objects)
-                for final in finals:
-                    patchwork_objects = remove_patchwork_from_list(
-                        final, patchwork_objects
-                    )
-                    patchwork_objects.append(final)
-                    selected_objects = remove_patchwork_from_list(
-                        final, selected_objects
-                    )
-                    selected_objects.append(final)
+                (
+                    patchwork_objects,
+                    selected_objects,
+                ) = update_patchwork_objects_and_selected_objects_lists(
+                    finals, patchwork_objects, selected_objects
+                )
             elif key == "q":
                 colour_blocks = draw_colour_block_selected(win, selected_objects)
-                for colour_block in colour_blocks:
-                    patchwork_objects = remove_patchwork_from_list(
-                        colour_block, patchwork_objects
-                    )
-                    patchwork_objects.append(colour_block)
-                    selected_objects = remove_patchwork_from_list(
-                        colour_block, selected_objects
-                    )
-                    selected_objects.append(colour_block)
+                (
+                    patchwork_objects,
+                    selected_objects,
+                ) = update_patchwork_objects_and_selected_objects_lists(
+                    colour_blocks, patchwork_objects, selected_objects
+                )
             elif key == "x":
                 four_colour_blocks = draw_four_colour_block_random_selected(
                     win, selected_objects, valid_colours
                 )
-                for four_colour_block in four_colour_blocks:
-                    patchwork_objects = remove_patchwork_from_list(
-                        four_colour_block, patchwork_objects
-                    )
-                    patchwork_objects.append(four_colour_block)
-                    selected_objects = remove_patchwork_from_list(
-                        four_colour_block, selected_objects
-                    )
-                    selected_objects.append(four_colour_block)
+                (
+                    patchwork_objects,
+                    selected_objects,
+                ) = update_patchwork_objects_and_selected_objects_lists(
+                    four_colour_blocks, patchwork_objects, selected_objects
+                )
             elif key == "d":
                 selected_objects = []
                 undraw_borders(borders)
