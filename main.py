@@ -652,7 +652,6 @@ def challenge(win, patchwork_objects, valid_colours):
                         four_colour_block, selected_objects
                     )
                     selected_objects.append(four_colour_block)
-                selected_objects = []
             elif key == "d":
                 selected_objects = []
                 undraw_borders(borders)
