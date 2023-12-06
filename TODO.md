@@ -7,4 +7,4 @@
 
 ## Bugs
 
-- [ ] Sometimes patterns are still overlapped when selecting and deselecting repeatedly
+- [ ] Cannot paste a pattern over the four colour block pattern initially
