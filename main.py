@@ -3,25 +3,25 @@ from graphics import GraphWin, Point, Text, Line, Polygon, Rectangle
 
 
 # draw_penultimate functions
-def draw_triangle(win, colour, top_x, top_y, shape):
+def draw_triangle(win, colour, top_left_x, top_left_y, shape):
     offset_x = 10
     offset_y = 20
     polygon = Polygon(
-        Point(top_x, top_y),
-        Point(top_x - offset_x, top_y + offset_y),
-        Point(top_x + offset_x, top_y + offset_y),
+        Point(top_left_x, top_left_y),
+        Point(top_left_x - offset_x, top_left_y + offset_y),
+        Point(top_left_x + offset_x, top_left_y + offset_y),
     )
     if shape == "half_left":
         polygon = Polygon(
-            Point(top_x, top_y),
-            Point(top_x - offset_x, top_y + offset_y),
-            Point(top_x, top_y + offset_y),
+            Point(top_left_x, top_left_y),
+            Point(top_left_x - offset_x, top_left_y + offset_y),
+            Point(top_left_x, top_left_y + offset_y),
         )
     elif shape == "half_right":
         polygon = Polygon(
-            Point(top_x, top_y),
-            Point(top_x, top_y + offset_y),
-            Point(top_x + offset_x, top_y + offset_y),
+            Point(top_left_x, top_left_y),
+            Point(top_left_x, top_left_y + offset_y),
+            Point(top_left_x + offset_x, top_left_y + offset_y),
         )
     polygon.setFill(colour)
     polygon.setOutline(colour)
@@ -435,8 +435,6 @@ def undraw_borders(borders):
 def draw_border_selected(win, point, patchwork_objects, selected_objects, borders):
     patchwork_object = get_patchwork_object(point, patchwork_objects)
     if patchwork_object is not None:
-        print(patchwork_object["top_left_x"])
-        print(patchwork_object["top_left_y"])
         selected_objects.append(patchwork_object)
         border = draw_border(
             win, patchwork_object["top_left_x"], patchwork_object["top_left_y"]
@@ -567,9 +565,11 @@ def remove_patchwork_from_list(patchwork, patchwork_list):
     new_list = []
     for patch_dict in patchwork_list:
         if (
-            patchwork["top_left_x"] is not patch_dict["top_left_x"]
-            or patchwork["top_left_y"] is not patch_dict["top_left_y"]
+            patchwork["top_left_x"] == patch_dict["top_left_x"]
+            and patchwork["top_left_y"] == patch_dict["top_left_y"]
         ):
+            pass
+        else:
             new_list.append(patch_dict)
     return new_list
 
