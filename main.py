@@ -240,7 +240,7 @@ def draw_patchwork(size, sizes, colours, valid_colours):
     win = GraphWin("Patchwork", win_width, win_height)
     win.setBackground("white")
 
-    patchworks = []
+    patch_list = []
 
     x = 0
     y = 0
@@ -263,7 +263,7 @@ def draw_patchwork(size, sizes, colours, valid_colours):
                     pen_y_index_lower_bound,
                     pen_y_index_higher_bound,
                 )
-                patchworks.append(patch)
+                patch_list.append(patch)
             elif y_increment > 0 and x_increment >= colour_split:
                 colour = colours[2]
                 patch = choose_patch(
@@ -280,7 +280,7 @@ def draw_patchwork(size, sizes, colours, valid_colours):
                     pen_y_index_lower_bound,
                     pen_y_index_higher_bound,
                 )
-                patchworks.append(patch)
+                patch_list.append(patch)
             else:
                 colour = colours[0]
                 patch = choose_patch(
@@ -297,13 +297,13 @@ def draw_patchwork(size, sizes, colours, valid_colours):
                     pen_y_index_lower_bound,
                     pen_y_index_higher_bound,
                 )
-                patchworks.append(patch)
+                patch_list.append(patch)
             x += 100
         colour_split -= 1
         x = initial_x
         y += 100
 
-    challenge(win, patchworks, valid_colours)
+    challenge(win, patch_list, valid_colours)
 
 
 # get_inputs functions
