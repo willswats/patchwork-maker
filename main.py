@@ -388,21 +388,26 @@ def draw_border(win, x, y):
     size = 100
     line_width = 5
 
-    lines = []
-    lineTopLeftToTopRight = Line(Point(x, y), Point(x + size, y))
-    lines.append(lineTopLeftToTopRight)
-    lineTopLeftToBottomLeft = Line(Point(x, y), Point(x, y + size))
-    lines.append(lineTopLeftToBottomLeft)
-    lineTopRightToBottomRight = Line(Point(x + size, y), Point(x + size, y + size))
-    lines.append(lineTopRightToBottomRight)
-    lineBottomLeftToBottomRight = Line(Point(x, y + size), Point(x + size, y + size))
-    lines.append(lineBottomLeftToBottomRight)
+    border = {
+        "x": x,
+        "y": y,
+        "objects": [],
+    }
 
-    for line in lines:
+    lineTopLeftToTopRight = Line(Point(x, y), Point(x + size, y))
+    border["objects"].append(lineTopLeftToTopRight)
+    lineTopLeftToBottomLeft = Line(Point(x, y), Point(x, y + size))
+    border["objects"].append(lineTopLeftToBottomLeft)
+    lineTopRightToBottomRight = Line(Point(x + size, y), Point(x + size, y + size))
+    border["objects"].append(lineTopRightToBottomRight)
+    lineBottomLeftToBottomRight = Line(Point(x, y + size), Point(x + size, y + size))
+    border["objects"].append(lineBottomLeftToBottomRight)
+
+    for line in border["objects"]:
         line.draw(win)
         line.setWidth(line_width)
 
-    return lines
+    return border
 
 
 def draw_button(
@@ -475,19 +480,14 @@ def undraw_objects_in_list_of_dictionary(list_of_dictionary):
             obj.undraw()
 
 
-def undraw_borders(borders):
-    for border in borders:
-        for line in border:
-            line.undraw()
-
-
-def draw_border_selected(win, point, patchworks, selected_list, borders):
-    patchwork = get_patchwork(point, patchworks)
-    if patchwork is not None:
-        if patchwork in selected_list:
+# TODO: Move this into seperate functions or rename appropriately.
+def draw_border_selected(win, point, patch_list, selected_list, borders):
+    patch = get_patchwork(point, patch_list)
+    if patch is not None:
+        if patch in selected_list:
             return
-        selected_list.append(patchwork)
-        border = draw_border(win, patchwork["x"], patchwork["y"])
+        selected_list.append(patch)
+        border = draw_border(win, patch["x"], patch["y"])
         borders.append(border)
 
 
@@ -553,6 +553,7 @@ def get_random_colour(colours):
 def draw_four_colour_patch_on_selected(win, selected_list, valid_colours):
     four_colours = []
     size = 50
+
     undraw_objects_in_list_of_dictionary(selected_list)
 
     for selected_dictionary in selected_list:
@@ -658,6 +659,7 @@ def challenge(win, patch_list, valid_colours):
 
             point = win.getMouse()
 
+            # TODO: Move into function
             if (
                 point.getX() > buttons[0]["x"]
                 and point.getX() <= buttons[0]["x"] + buttons_size
@@ -668,6 +670,7 @@ def challenge(win, patch_list, valid_colours):
                 edit_mode = True
                 break
 
+            # TODO: Move into function
             if (
                 point.getX() > buttons[1]["x"]
                 and point.getX() <= buttons[1]["x"] + buttons_size
@@ -710,7 +713,7 @@ def challenge(win, patch_list, valid_colours):
                 )
             elif key == "d":
                 selected_list = []
-                undraw_borders(borders)
+                undraw_objects_in_list_of_dictionary(borders)
             else:
                 colour_selected(key, selected_list, valid_colours)
 
