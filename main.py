@@ -548,59 +548,69 @@ def get_random_colour(colours):
     return colour
 
 
+def draw_four_colour_patch(win, x, y, size, prev_colour, valid_colours):
+    colours = []
+
+    for _ in range(4):
+        colours.append(get_random_colour(valid_colours))
+
+    four_colour = {
+        "x": x,
+        "y": y,
+        "colour": prev_colour,
+        "objects": [],
+    }
+
+    block_one = draw_colour_patch(
+        win,
+        x,
+        y,
+        colours[0],
+        size,
+    )
+    block_two = draw_colour_patch(
+        win,
+        x + size,
+        y,
+        colours[1],
+        size,
+    )
+    block_three = draw_colour_patch(
+        win,
+        x,
+        y + size,
+        colours[2],
+        size,
+    )
+    block_four = draw_colour_patch(
+        win,
+        x + size,
+        y + size,
+        colours[3],
+        size,
+    )
+
+    four_colour["objects"].append(block_one["objects"][0])
+    four_colour["objects"].append(block_two["objects"][0])
+    four_colour["objects"].append(block_three["objects"][0])
+    four_colour["objects"].append(block_four["objects"][0])
+
+    return four_colour
+
+
 def draw_four_colour_patch_on_selected(win, selected_list, valid_colours):
     four_colours = []
     size = 50
 
     undraw_objects_in_list_of_dictionary(selected_list)
-
     for selected_dictionary in selected_list:
-        colours = []
+        x = selected_dictionary["x"]
+        y = selected_dictionary["y"]
+        prev_colour = selected_dictionary["colour"]
 
-        for _ in range(4):
-            colours.append(get_random_colour(valid_colours))
-
-        four_colour = {
-            "x": selected_dictionary["x"],
-            "y": selected_dictionary["y"],
-            "colour": colours[0],
-            "objects": [],
-        }
-
-        block_one = draw_colour_patch(
-            win,
-            selected_dictionary["x"],
-            selected_dictionary["y"],
-            colours[0],
-            size,
+        four_colour = draw_four_colour_patch(
+            win, x, y, size, prev_colour, valid_colours
         )
-        block_two = draw_colour_patch(
-            win,
-            selected_dictionary["x"] + size,
-            selected_dictionary["y"],
-            colours[1],
-            size,
-        )
-        block_three = draw_colour_patch(
-            win,
-            selected_dictionary["x"],
-            selected_dictionary["y"] + size,
-            colours[2],
-            size,
-        )
-        block_four = draw_colour_patch(
-            win,
-            selected_dictionary["x"] + size,
-            selected_dictionary["y"] + size,
-            colours[3],
-            size,
-        )
-
-        four_colour["objects"].append(block_one["objects"][0])
-        four_colour["objects"].append(block_two["objects"][0])
-        four_colour["objects"].append(block_three["objects"][0])
-        four_colour["objects"].append(block_four["objects"][0])
-
         four_colours.append(four_colour)
 
     return four_colours
