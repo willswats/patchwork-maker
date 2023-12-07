@@ -480,9 +480,7 @@ def undraw_objects_in_list_of_dictionary(list_of_dictionary):
             obj.undraw()
 
 
-# TODO: Move this into seperate functions or rename appropriately.
-def draw_border_selected(win, point, patch_list, selected_list, borders):
-    patch = get_patchwork(point, patch_list)
+def draw_border_and_add_patch_to_selected(win, patch, selected_list, borders):
     if patch is not None:
         if patch in selected_list:
             return
@@ -641,6 +639,10 @@ def update_patch_list_and_selected_list(new_patch_list, patch_list, selected_lis
     return patch_list, selected_list
 
 
+def check_inside_ok_button():
+    pass
+
+
 def challenge(win, patch_list, valid_colours):
     selected_list = []
     borders = []
@@ -680,7 +682,8 @@ def challenge(win, patch_list, valid_colours):
                 closed = True
                 break
 
-            draw_border_selected(win, point, patch_list, selected_list, borders)
+            patch = get_patchwork(point, patch_list)
+            draw_border_and_add_patch_to_selected(win, patch, selected_list, borders)
 
         while edit_mode:
             undraw_objects_in_list_of_dictionary(buttons)
