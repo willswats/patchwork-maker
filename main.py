@@ -6,6 +6,7 @@ from graphics import GraphWin, Point, Text, Line, Polygon, Rectangle
 def draw_triangle(win, colour, x, y, shape):
     offset_x = 10
     offset_y = 20
+
     polygon = Polygon(
         Point(x, y),
         Point(x - offset_x, y + offset_y),
@@ -26,25 +27,34 @@ def draw_triangle(win, colour, x, y, shape):
     polygon.setFill(colour)
     polygon.setOutline(colour)
     polygon.draw(win)
+
     return polygon
 
 
 def draw_triangle_row(win, colour, x, y):
     triangles = []
-    for _ in range(5):
+
+    repetitions = 5
+    x_addition = 20
+
+    for _ in range(repetitions):
         triangle = draw_triangle(win, colour, x, y, "")
         triangles.append(triangle)
-        x += 20
+        x += x_addition
+
     return triangles
 
 
 def draw_triangle_row_odd(win, colour, x, y):
     triangles = []
+
     start = 0
     end = 5
+    repetitions = 6
+    x_addition = 20
 
     x = x - 10
-    for x_increment in range(6):
+    for x_increment in range(repetitions):
         if x_increment == start:
             triangle = draw_triangle(win, colour, x, y, "half_right")
             triangles.append(triangle)
@@ -54,58 +64,78 @@ def draw_triangle_row_odd(win, colour, x, y):
         else:
             triangle = draw_triangle(win, colour, x, y, "")
             triangles.append(triangle)
-        x += 20
+        x += x_addition
 
     return triangles
 
 
-def draw_penultimate(win, x, y, colour):
-    pen = {"x": x, "y": y, "colour": colour, "objects": []}
+def draw_penultimate_patch(win, x, y, colour):
+    patch = {"x": x, "y": y, "colour": colour, "objects": []}
 
     initial_x = x + 10
+    repetitions = 5
+    y_addition = 20
 
     x = initial_x
-    for y_increment in range(5):
+    for y_increment in range(repetitions):
         if y_increment % 2 == 0:
             triangles = draw_triangle_row(win, colour, x, y)
             for triangle in triangles:
-                pen["objects"].append(triangle)
+                patch["objects"].append(triangle)
         else:
             triangles = draw_triangle_row_odd(win, colour, x, y)
             for triangle in triangles:
-                pen["objects"].append(triangle)
+                patch["objects"].append(triangle)
         x = initial_x
-        y += 20
+        y += y_addition
 
-    return pen
+    return patch
 
 
 # draw_final functions
 def draw_line_row(win, y, initial_x, colour):
-    line_row = Line(Point(initial_x, y + 20), Point(initial_x + 100, y + 20))
+    width = 100
+    height = 20
+
+    line_row = Line(Point(initial_x, y + height), Point(initial_x + width, y + height))
     line_row.setOutline(colour)
     line_row.draw(win)
+
     return line_row
 
 
 def draw_line_column(win, x, initial_y, colour):
-    line_column = Line(Point(x + 20, initial_y), Point(x + 20, initial_y + 100))
+    width = 20
+    height = 100
+
+    line_column = Line(
+        Point(x + width, initial_y), Point(x + width, initial_y + height)
+    )
     line_column.setOutline(colour)
     line_column.draw(win)
+
     return line_column
 
 
 def draw_text_in_block(win, x, y, block_size, colour, text_string, text_size):
-    text_point = Point(x + (block_size / 2), y + (block_size / 2))
+    block_middle = block_size / 2
+
+    text_point = Point(x + block_middle, y + block_middle)
     text = Text(text_point, text_string)
     text.setFill(colour)
     text.setSize(text_size)
     text.draw(win)
+
     return text
 
 
-def draw_final(win, x, y, colour):
-    final = {"x": x, "y": y, "colour": colour, "objects": []}
+def draw_final_patch(win, x, y, colour):
+    patch = {
+        "x": x,
+        "y": y,
+        "colour": colour,
+        "objects": [],
+    }
 
     block_size = 20
 
@@ -120,31 +150,32 @@ def draw_final(win, x, y, colour):
     for y_increment in range(repetitions):
         if y_increment < repetitions - 1:
             line_row = draw_line_row(win, y, initial_x, colour)
-            final["objects"].append(line_row)
+            patch["objects"].append(line_row)
         for x_increment in range(repetitions):
             text_in_block = draw_text_in_block(
                 win, x, y, block_size, colour, text, text_size
             )
-            final["objects"].append(text_in_block)
+            patch["objects"].append(text_in_block)
             if x_increment < repetitions - 1:
                 line_column = draw_line_column(win, x, initial_y, colour)
-                final["objects"].append(line_column)
+                patch["objects"].append(line_column)
 
             x += block_size
         x = initial_x
         y += block_size
 
-    return final
+    return patch
 
 
 # draw_patchwork functions
-def draw_colour_block(win, x, y, colour, size):
-    colour_block = {
+def draw_colour_patch(win, x, y, colour, size):
+    patch = {
         "x": x,
         "y": y,
         "colour": colour,
         "objects": [],
     }
+
     rectangle = Rectangle(
         Point(x, y),
         Point(x + size, y + size),
@@ -152,11 +183,13 @@ def draw_colour_block(win, x, y, colour, size):
     rectangle.setFill(colour)
     rectangle.setOutline(colour)
     rectangle.draw(win)
-    colour_block["objects"].append(rectangle)
-    return colour_block
+
+    patch["objects"].append(rectangle)
+
+    return patch
 
 
-def choose_draw(
+def choose_patch(
     win,
     x,
     y,
@@ -178,14 +211,14 @@ def choose_draw(
         and y_increment >= pen_y_index_lower_bound
         and y_increment <= pen_y_index_higher_bound
     ):
-        pen_objects = draw_penultimate(win, x, y, colour)
-        return pen_objects
+        patch = draw_penultimate_patch(win, x, y, colour)
+        return patch
     elif x_increment <= final_x_index and y_increment >= final_y_index:
-        final_objects = draw_final(win, x, y, colour)
-        return final_objects
+        patch = draw_final_patch(win, x, y, colour)
+        return patch
     else:
-        colour_block_objects = draw_colour_block(win, x, y, colour, colour_block_size)
-        return colour_block_objects
+        patch = draw_colour_patch(win, x, y, colour, colour_block_size)
+        return patch
 
 
 def draw_patchwork(size, sizes, colours, valid_colours):
@@ -207,7 +240,7 @@ def draw_patchwork(size, sizes, colours, valid_colours):
     win = GraphWin("Patchwork", win_width, win_height)
     win.setBackground("white")
 
-    patchwork_objects = []
+    patchworks = []
 
     x = 0
     y = 0
@@ -216,7 +249,7 @@ def draw_patchwork(size, sizes, colours, valid_colours):
         for x_increment in range(size):
             if x_increment == colour_split:
                 colour = colours[1]
-                objects = choose_draw(
+                patch = choose_patch(
                     win,
                     x,
                     y,
@@ -230,10 +263,10 @@ def draw_patchwork(size, sizes, colours, valid_colours):
                     pen_y_index_lower_bound,
                     pen_y_index_higher_bound,
                 )
-                patchwork_objects.append(objects)
+                patchworks.append(patch)
             elif y_increment > 0 and x_increment >= colour_split:
                 colour = colours[2]
-                objects = choose_draw(
+                patch = choose_patch(
                     win,
                     x,
                     y,
@@ -247,10 +280,10 @@ def draw_patchwork(size, sizes, colours, valid_colours):
                     pen_y_index_lower_bound,
                     pen_y_index_higher_bound,
                 )
-                patchwork_objects.append(objects)
+                patchworks.append(patch)
             else:
                 colour = colours[0]
-                objects = choose_draw(
+                patch = choose_patch(
                     win,
                     x,
                     y,
@@ -264,13 +297,13 @@ def draw_patchwork(size, sizes, colours, valid_colours):
                     pen_y_index_lower_bound,
                     pen_y_index_higher_bound,
                 )
-                patchwork_objects.append(objects)
+                patchworks.append(patch)
             x += 100
         colour_split -= 1
         x = initial_x
         y += 100
 
-    challenge(win, patchwork_objects, valid_colours)
+    challenge(win, patchworks, valid_colours)
 
 
 # get_inputs functions
@@ -333,22 +366,22 @@ def get_inputs():
 
 
 # challenge functions
-def get_patchwork_object(point, patchwork_objects):
+def get_patchwork(point, patchworks):
     size = 100
 
-    for patchwork_object in patchwork_objects:
-        patchwork_object_x_start = patchwork_object["x"]
-        patchwork_object_x_end = patchwork_object["x"] + size
-        patchwork_object_y_start = patchwork_object["y"]
-        patchwork_object_y_end = patchwork_object["y"] + size
+    for patchwork in patchworks:
+        patchwork_x_start = patchwork["x"]
+        patchwork_x_end = patchwork["x"] + size
+        patchwork_y_start = patchwork["y"]
+        patchwork_y_end = patchwork["y"] + size
 
         if (
-            point.getX() > patchwork_object_x_start
-            and point.getX() < patchwork_object_x_end
-            and point.getY() > patchwork_object_y_start
-            and point.getY() < patchwork_object_y_end
+            point.getX() > patchwork_x_start
+            and point.getX() < patchwork_x_end
+            and point.getY() > patchwork_y_start
+            and point.getY() < patchwork_y_end
         ):
-            return patchwork_object
+            return patchwork
 
 
 def draw_border(win, x, y):
@@ -382,7 +415,7 @@ def draw_button(
     text_size,
     text_string,
 ):
-    block = draw_colour_block(win, x, y, block_colour, block_size)
+    block = draw_colour_patch(win, x, y, block_colour, block_size)
     text = draw_text_in_block(
         win, x, y, block_size, text_colour, text_string, text_size
     )
@@ -400,31 +433,46 @@ def draw_button(
 
 def draw_buttons(win, size):
     button_colour = "black"
+
     text_size = 6
     text_colour = "white"
 
+    ok_button_x = 0
+    ok_button_y = 0
+    ok_button_text = "OK"
+
+    close_button_x = win.getWidth() - size
+    close_button_y = 0
+    close_button_text = "CLOSE"
+
     ok_button = draw_button(
-        win, 0, 0, button_colour, size, text_colour, text_size, "OK"
-    )
-    close_button = draw_button(
         win,
-        win.getWidth() - size,
-        0,
+        ok_button_x,
+        ok_button_y,
         button_colour,
         size,
         text_colour,
         text_size,
-        "CLOSE",
+        ok_button_text,
+    )
+    close_button = draw_button(
+        win,
+        close_button_x,
+        close_button_y,
+        button_colour,
+        size,
+        text_colour,
+        text_size,
+        close_button_text,
     )
 
     return [ok_button, close_button]
 
 
-def undraw_buttons(buttons):
-    for button_object in buttons[0]["objects"]:
-        button_object.undraw()
-    for button_object in buttons[1]["objects"]:
-        button_object.undraw()
+def undraw_objects_in_list_of_dictionary(list_of_dictionary):
+    for dictionary in list_of_dictionary:
+        for obj in dictionary["objects"]:
+            obj.undraw()
 
 
 def undraw_borders(borders):
@@ -433,62 +481,66 @@ def undraw_borders(borders):
             line.undraw()
 
 
-def draw_border_selected(win, point, patchwork_objects, selected_objects, borders):
-    patchwork_object = get_patchwork_object(point, patchwork_objects)
-    if patchwork_object is not None:
-        if patchwork_object in selected_objects:
+def draw_border_selected(win, point, patchworks, selected_list, borders):
+    patchwork = get_patchwork(point, patchworks)
+    if patchwork is not None:
+        if patchwork in selected_list:
             return
-        selected_objects.append(patchwork_object)
-        border = draw_border(win, patchwork_object["x"], patchwork_object["y"])
+        selected_list.append(patchwork)
+        border = draw_border(win, patchwork["x"], patchwork["y"])
         borders.append(border)
 
 
-def undraw_selected_objects(selected_objects):
-    for selected_object in selected_objects:
-        for obj in selected_object["objects"]:
-            obj.undraw()
-
-
-def draw_final_selected(win, selected_objects):
+def draw_final_patch_on_selected(win, selected_list):
     finals = []
-    undraw_selected_objects(selected_objects)
-    for selected_object in selected_objects:
-        final = draw_final(
+
+    undraw_objects_in_list_of_dictionary(selected_list)
+
+    for selected_dictionary in selected_list:
+        final = draw_final_patch(
             win,
-            selected_object["x"],
-            selected_object["y"],
-            selected_object["colour"],
+            selected_dictionary["x"],
+            selected_dictionary["y"],
+            selected_dictionary["colour"],
         )
         finals.append(final)
+
     return finals
 
 
-def draw_pen_selected(win, selected_objects):
+def draw_pen_patch_on_selected(win, selected_list):
     pens = []
-    undraw_selected_objects(selected_objects)
-    for selected_object in selected_objects:
-        pen = draw_penultimate(
+
+    undraw_objects_in_list_of_dictionary(selected_list)
+
+    for selected_dictionary in selected_list:
+        pen = draw_penultimate_patch(
             win,
-            selected_object["x"],
-            selected_object["y"],
-            selected_object["colour"],
+            selected_dictionary["x"],
+            selected_dictionary["y"],
+            selected_dictionary["colour"],
         )
         pens.append(pen)
+
     return pens
 
 
-def draw_colour_block_selected(win, selected_objects):
+def draw_colour_patch_on_selected(win, selected_list):
     colour_blocks = []
-    undraw_selected_objects(selected_objects)
-    for selected_object in selected_objects:
-        block = draw_colour_block(
+    size = 100
+
+    undraw_objects_in_list_of_dictionary(selected_list)
+
+    for selected_dictionary in selected_list:
+        block = draw_colour_patch(
             win,
-            selected_object["x"],
-            selected_object["y"],
-            selected_object["colour"],
-            100,
+            selected_dictionary["x"],
+            selected_dictionary["y"],
+            selected_dictionary["colour"],
+            size,
         )
         colour_blocks.append(block)
+
     return colour_blocks
 
 
@@ -498,59 +550,61 @@ def get_random_colour(colours):
     return colour
 
 
-def draw_four_colour_block_random_selected(win, selected_objects, valid_colours):
+def draw_four_colour_patch_on_selected(win, selected_list, valid_colours):
+    four_colours = []
     size = 50
-    four_colour_blocks = []
-    undraw_selected_objects(selected_objects)
+    undraw_objects_in_list_of_dictionary(selected_list)
 
-    for selected_object in selected_objects:
+    for selected_dictionary in selected_list:
         colours = []
+
         for _ in range(4):
             colours.append(get_random_colour(valid_colours))
 
-        colour_block = {
-            "x": selected_object["x"],
-            "y": selected_object["y"],
+        four_colour = {
+            "x": selected_dictionary["x"],
+            "y": selected_dictionary["y"],
             "colour": colours[0],
             "objects": [],
         }
 
-        block_one = draw_colour_block(
+        block_one = draw_colour_patch(
             win,
-            selected_object["x"],
-            selected_object["y"],
+            selected_dictionary["x"],
+            selected_dictionary["y"],
             colours[0],
             size,
         )
-        block_two = draw_colour_block(
+        block_two = draw_colour_patch(
             win,
-            selected_object["x"] + size,
-            selected_object["y"],
+            selected_dictionary["x"] + size,
+            selected_dictionary["y"],
             colours[1],
             size,
         )
-        block_three = draw_colour_block(
+        block_three = draw_colour_patch(
             win,
-            selected_object["x"],
-            selected_object["y"] + size,
+            selected_dictionary["x"],
+            selected_dictionary["y"] + size,
             colours[2],
             size,
         )
-        block_four = draw_colour_block(
+        block_four = draw_colour_patch(
             win,
-            selected_object["x"] + size,
-            selected_object["y"] + size,
+            selected_dictionary["x"] + size,
+            selected_dictionary["y"] + size,
             colours[3],
             size,
         )
 
-        colour_block["objects"].append(block_one["objects"][0])
-        colour_block["objects"].append(block_two["objects"][0])
-        colour_block["objects"].append(block_three["objects"][0])
-        colour_block["objects"].append(block_four["objects"][0])
+        four_colour["objects"].append(block_one["objects"][0])
+        four_colour["objects"].append(block_two["objects"][0])
+        four_colour["objects"].append(block_three["objects"][0])
+        four_colour["objects"].append(block_four["objects"][0])
 
-        four_colour_blocks.append(colour_block)
-    return four_colour_blocks
+        four_colours.append(four_colour)
+
+    return four_colours
 
 
 def colour_selected(key, selected_objects, valid_colours):
@@ -563,33 +617,31 @@ def colour_selected(key, selected_objects, valid_colours):
                     obj.setOutline(colour)
 
 
-def remove_identical_x_and_y_patchwork_from_list(patchwork, patchwork_list):
-    new_list = []
-    for patch_obj in patchwork_list:
-        if patchwork["x"] == patch_obj["x"] and patchwork["y"] == patch_obj["y"]:
+def remove_identical_x_and_y_patch_from_list(patch, patch_list):
+    new_patch_list = []
+
+    for patch_in_list in patch_list:
+        if patch["x"] == patch_in_list["x"] and patch["y"] == patch_in_list["y"]:
             pass
         else:
-            new_list.append(patch_obj)
-    return new_list
+            new_patch_list.append(patch_in_list)
+
+    return new_patch_list
 
 
-def update_patchwork_objects_and_selected_objects_lists(
-    new_patchworks, patchwork_objects, selected_objects
-):
-    for new_patchwork in new_patchworks:
-        patchwork_objects = remove_identical_x_and_y_patchwork_from_list(
-            new_patchwork, patchwork_objects
+def update_patch_list_and_selected_list(new_patch_list, patch_list, selected_list):
+    for new_patch in new_patch_list:
+        patch_list = remove_identical_x_and_y_patch_from_list(new_patch, patch_list)
+        patch_list.append(new_patch)
+        selected_list = remove_identical_x_and_y_patch_from_list(
+            new_patch, selected_list
         )
-        patchwork_objects.append(new_patchwork)
-        selected_objects = remove_identical_x_and_y_patchwork_from_list(
-            new_patchwork, selected_objects
-        )
-        selected_objects.append(new_patchwork)
-    return patchwork_objects, selected_objects
+        selected_list.append(new_patch)
+    return patch_list, selected_list
 
 
-def challenge(win, patchwork_objects, valid_colours):
-    selected_objects = []
+def challenge(win, patch_list, valid_colours):
+    selected_list = []
     borders = []
 
     selection_mode = True
@@ -601,7 +653,7 @@ def challenge(win, patchwork_objects, valid_colours):
 
     while not closed:
         while selection_mode:
-            undraw_buttons(buttons)
+            undraw_objects_in_list_of_dictionary(buttons)
             buttons = draw_buttons(win, buttons_size)
 
             point = win.getMouse()
@@ -625,56 +677,42 @@ def challenge(win, patchwork_objects, valid_colours):
                 closed = True
                 break
 
-            draw_border_selected(
-                win, point, patchwork_objects, selected_objects, borders
-            )
+            draw_border_selected(win, point, patch_list, selected_list, borders)
 
         while edit_mode:
-            undraw_buttons(buttons)
+            undraw_objects_in_list_of_dictionary(buttons)
             key = win.getKey()
 
             if key == "s":
                 edit_mode = False
                 selection_mode = True
             elif key == "p":
-                pens = draw_pen_selected(win, selected_objects)
-                (
-                    patchwork_objects,
-                    selected_objects,
-                ) = update_patchwork_objects_and_selected_objects_lists(
-                    pens, patchwork_objects, selected_objects
+                pens = draw_pen_patch_on_selected(win, selected_list)
+                patch_list, selected_list = update_patch_list_and_selected_list(
+                    pens, patch_list, selected_list
                 )
             elif key == "f":
-                finals = draw_final_selected(win, selected_objects)
-                (
-                    patchwork_objects,
-                    selected_objects,
-                ) = update_patchwork_objects_and_selected_objects_lists(
-                    finals, patchwork_objects, selected_objects
+                finals = draw_final_patch_on_selected(win, selected_list)
+                patch_list, selected_list = update_patch_list_and_selected_list(
+                    finals, patch_list, selected_list
                 )
             elif key == "q":
-                colour_blocks = draw_colour_block_selected(win, selected_objects)
-                (
-                    patchwork_objects,
-                    selected_objects,
-                ) = update_patchwork_objects_and_selected_objects_lists(
-                    colour_blocks, patchwork_objects, selected_objects
+                colours = draw_colour_patch_on_selected(win, selected_list)
+                patch_list, selected_list = update_patch_list_and_selected_list(
+                    colours, patch_list, selected_list
                 )
             elif key == "x":
-                four_colour_blocks = draw_four_colour_block_random_selected(
-                    win, selected_objects, valid_colours
+                four_colours = draw_four_colour_patch_on_selected(
+                    win, selected_list, valid_colours
                 )
-                (
-                    patchwork_objects,
-                    selected_objects,
-                ) = update_patchwork_objects_and_selected_objects_lists(
-                    four_colour_blocks, patchwork_objects, selected_objects
+                patch_list, selected_list = update_patch_list_and_selected_list(
+                    four_colours, patch_list, selected_list
                 )
             elif key == "d":
-                selected_objects = []
+                selected_list = []
                 undraw_borders(borders)
             else:
-                colour_selected(key, selected_objects, valid_colours)
+                colour_selected(key, selected_list, valid_colours)
 
 
 # main
