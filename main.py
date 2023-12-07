@@ -639,8 +639,16 @@ def update_patch_list_and_selected_list(new_patch_list, patch_list, selected_lis
     return patch_list, selected_list
 
 
-def check_inside_ok_button():
-    pass
+def check_if_point_inside_button(point, button_x, button_y, button_size):
+    inside = False
+    if (
+        point.getX() > button_x
+        and point.getX() <= button_x + button_size
+        and point.getY() > button_y
+        and point.getY() <= button_y + button_size
+    ):
+        inside = True
+    return inside
 
 
 def challenge(win, patch_list, valid_colours):
@@ -661,24 +669,18 @@ def challenge(win, patch_list, valid_colours):
 
             point = win.getMouse()
 
-            # TODO: Move into function
-            if (
-                point.getX() > buttons[0]["x"]
-                and point.getX() <= buttons[0]["x"] + buttons_size
-                and point.getY() > buttons[0]["y"]
-                and point.getY() <= buttons[0]["y"] + buttons_size
-            ):
+            click_is_inside_ok_button = check_if_point_inside_button(
+                point, buttons[0]["x"], buttons[0]["y"], buttons_size
+            )
+            if click_is_inside_ok_button:
                 selection_mode = False
                 edit_mode = True
                 break
 
-            # TODO: Move into function
-            if (
-                point.getX() > buttons[1]["x"]
-                and point.getX() <= buttons[1]["x"] + buttons_size
-                and point.getY() > buttons[1]["y"]
-                and point.getY() <= buttons[1]["y"] + buttons_size
-            ):
+            click_is_inside_close_button = check_if_point_inside_button(
+                point, buttons[1]["x"], buttons[1]["y"], buttons_size
+            )
+            if click_is_inside_close_button:
                 closed = True
                 break
 
