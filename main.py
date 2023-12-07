@@ -661,6 +661,8 @@ def challenge(win, patch_list, valid_colours):
 
     buttons_size = 30
     buttons = draw_buttons(win, buttons_size)
+    ok_button = buttons[0]
+    close_button = buttons[1]
 
     while not closed:
         while selection_mode:
@@ -670,7 +672,7 @@ def challenge(win, patch_list, valid_colours):
             point = win.getMouse()
 
             click_is_inside_ok_button = check_if_point_inside_button(
-                point, buttons[0]["x"], buttons[0]["y"], buttons_size
+                point, ok_button["x"], ok_button["y"], buttons_size
             )
             if click_is_inside_ok_button:
                 selection_mode = False
@@ -678,7 +680,7 @@ def challenge(win, patch_list, valid_colours):
                 break
 
             click_is_inside_close_button = check_if_point_inside_button(
-                point, buttons[1]["x"], buttons[1]["y"], buttons_size
+                point, close_button["x"], close_button["y"], buttons_size
             )
             if click_is_inside_close_button:
                 closed = True
