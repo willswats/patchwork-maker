@@ -483,6 +483,7 @@ def undraw_objects_in_list_of_dictionary(list_of_dictionary):
 def draw_border_and_add_patch_to_selected(win, patch, selected_list, borders):
     if patch is not None:
         if patch in selected_list:
+            # TODO: Deselect patches by clicking on them in selection mode
             return
         selected_list.append(patch)
         border = draw_border(win, patch["x"], patch["y"])
