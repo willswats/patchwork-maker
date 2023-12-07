@@ -3,7 +3,7 @@ from graphics import GraphWin, Point, Text, Line, Polygon, Rectangle
 
 
 # draw_penultimate functions
-def draw_triangle(win, colour, x, y, shape):
+def draw_triangle(win, x, y, colour, shape):
     offset_x = 10
     offset_y = 20
 
@@ -31,21 +31,21 @@ def draw_triangle(win, colour, x, y, shape):
     return polygon
 
 
-def draw_triangle_row(win, colour, x, y):
+def draw_triangle_row(win, x, y, colour):
     triangles = []
 
     repetitions = 5
     x_addition = 20
 
     for _ in range(repetitions):
-        triangle = draw_triangle(win, colour, x, y, "")
+        triangle = draw_triangle(win, x, y, colour, "")
         triangles.append(triangle)
         x += x_addition
 
     return triangles
 
 
-def draw_triangle_row_odd(win, colour, x, y):
+def draw_triangle_row_odd(win, x, y, colour):
     triangles = []
 
     start = 0
@@ -56,13 +56,13 @@ def draw_triangle_row_odd(win, colour, x, y):
     x = x - 10
     for x_increment in range(repetitions):
         if x_increment == start:
-            triangle = draw_triangle(win, colour, x, y, "half_right")
+            triangle = draw_triangle(win, x, y, colour, "half_right")
             triangles.append(triangle)
         elif x_increment == end:
-            triangle = draw_triangle(win, colour, x, y, "half_left")
+            triangle = draw_triangle(win, x, y, colour, "half_left")
             triangles.append(triangle)
         else:
-            triangle = draw_triangle(win, colour, x, y, "")
+            triangle = draw_triangle(win, x, y, colour, "")
             triangles.append(triangle)
         x += x_addition
 
@@ -79,11 +79,11 @@ def draw_penultimate_patch(win, x, y, colour):
     x = initial_x
     for y_increment in range(repetitions):
         if y_increment % 2 == 0:
-            triangles = draw_triangle_row(win, colour, x, y)
+            triangles = draw_triangle_row(win, x, y, colour)
             for triangle in triangles:
                 patch["objects"].append(triangle)
         else:
-            triangles = draw_triangle_row_odd(win, colour, x, y)
+            triangles = draw_triangle_row_odd(win, x, y, colour)
             for triangle in triangles:
                 patch["objects"].append(triangle)
         x = initial_x
