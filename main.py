@@ -481,13 +481,18 @@ def undraw_objects_in_list_of_dictionary(list_of_dictionary):
 
 
 def draw_border_and_add_patch_to_selected(win, patch, selected_list, borders):
-    if patch is not None:
-        if patch in selected_list:
-            # TODO: Deselect patches by clicking on them in selection mode
-            return
-        selected_list.append(patch)
-        border = draw_border(win, patch["x"], patch["y"])
-        borders.append(border)
+    if patch in selected_list:
+        selected_list = remove_identical_x_and_y_patch_from_list(patch, selected_list)
+        for border in borders:
+            if patch["x"] == border["x"] and patch["y"] == border["y"]:
+                borders = remove_identical_x_and_y_patch_from_list(border, borders)
+                undraw_objects_in_list_of_dictionary([border])
+        return selected_list, borders
+
+    selected_list.append(patch)
+    border = draw_border(win, patch["x"], patch["y"])
+    borders.append(border)
+    return selected_list, borders
 
 
 def draw_final_patch_on_selected(win, selected_list):
@@ -698,7 +703,9 @@ def challenge(win, patch_list, valid_colours):
                 break
 
             patch = get_patchwork(point, patch_list)
-            draw_border_and_add_patch_to_selected(win, patch, selected_list, borders)
+            selected_list, borders = draw_border_and_add_patch_to_selected(
+                win, patch, selected_list, borders
+            )
 
         while edit_mode:
             undraw_objects_in_list_of_dictionary(buttons)
