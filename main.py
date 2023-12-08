@@ -480,18 +480,24 @@ def undraw_objects_in_list_of_dictionary(list_of_dictionary):
             obj.undraw()
 
 
+def undraw_border(x, y, borders):
+    for border in borders:
+        if x == border["x"] and y == border["y"]:
+            borders = remove_identical_x_and_y_patch_from_list(border, borders)
+            undraw_objects_in_list_of_dictionary([border])
+    return borders
+
+
 def draw_border_and_add_patch_to_selected(win, patch, selected_list, borders):
     if patch in selected_list:
         selected_list = remove_identical_x_and_y_patch_from_list(patch, selected_list)
-        for border in borders:
-            if patch["x"] == border["x"] and patch["y"] == border["y"]:
-                borders = remove_identical_x_and_y_patch_from_list(border, borders)
-                undraw_objects_in_list_of_dictionary([border])
+        borders = undraw_border(patch["x"], patch["y"], borders)
         return selected_list, borders
 
     selected_list.append(patch)
     border = draw_border(win, patch["x"], patch["y"])
     borders.append(border)
+
     return selected_list, borders
 
 
@@ -737,8 +743,10 @@ def challenge(win, patch_list, valid_colours):
                     four_colours, patch_list, selected_list
                 )
             elif key == "d":
-                selected_list = []
                 undraw_objects_in_list_of_dictionary(borders)
+
+                selected_list = []
+                borders = []
             else:
                 colour_selected(key, selected_list, valid_colours)
 
