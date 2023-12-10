@@ -351,6 +351,10 @@ def get_inputs():
     valid_sizes = ["5", "7", "9"]
     valid_colours = ["red", "green", "blue", "magenta", "orange", "yellow", "cyan"]
     colours = []
+    sizes = []
+
+    for valid_size in valid_sizes:
+        sizes.append(int(valid_size))
 
     size = check_size(valid_sizes)
     colourOne = check_colour(valid_colours, colours)
@@ -359,8 +363,6 @@ def get_inputs():
     colours.append(colourTwo)
     colourThree = check_colour(valid_colours, colours)
     colours.append(colourThree)
-
-    sizes = [int(size) for size in valid_sizes]
 
     return int(size), sizes, colours, valid_colours
 
