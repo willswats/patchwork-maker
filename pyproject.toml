@@ -1,0 +1,33 @@
+[tool.poetry]
+name = "patchwork-maker"
+version = "0.1.0"
+description = "Display multiple patterns and interactively overwrite them"
+authors = ["willswats <willswats@users.noreply.github.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+"graphics.py" = "^5.0.1.post1"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.4.7"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+main = "patchwork-maker.main:main"
+
+[tool.ruff]
+select = [
+  "E",   # pycodestyle (Error)
+  "W",   # pycodestyle (Warning)
+  "N",   # pep8-naming
+  "I",   # isort
+  "A",   # flake8-builtins
+  "B",   # flake8-bugbear
+  "RUF", # Ruf-specific rules
+]
+line-length = 79
