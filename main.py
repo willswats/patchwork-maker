@@ -1,5 +1,6 @@
 from random import randint
-from graphics import GraphWin, Point, Text, Line, Polygon, Rectangle
+
+from graphics import GraphWin, Line, Point, Polygon, Rectangle, Text
 
 
 # draw_penultimate functions
@@ -97,7 +98,9 @@ def draw_line_row(win, y, initial_x, colour):
     width = 100
     height = 20
 
-    line_row = Line(Point(initial_x, y + height), Point(initial_x + width, y + height))
+    line_row = Line(
+        Point(initial_x, y + height), Point(initial_x + width, y + height)
+    )
     line_row.setOutline(colour)
     line_row.draw(win)
 
@@ -320,11 +323,17 @@ def check_colour(valid_colours, prev_colours):
     valid_colours_string = ", ".join(valid_colours)
     while True:
         colour = (
-            input(f"Enter patchwork colour ({valid_colours_string}): ").lower().strip()
+            input(f"Enter patchwork colour ({valid_colours_string}): ")
+            .lower()
+            .strip()
         )
 
-        colour_valid = check_string_is_equal_to_item_in_list(colour, valid_colours)
-        colour_exists = check_string_is_equal_to_item_in_list(colour, prev_colours)
+        colour_valid = check_string_is_equal_to_item_in_list(
+            colour, valid_colours
+        )
+        colour_exists = check_string_is_equal_to_item_in_list(
+            colour, prev_colours
+        )
         if not colour_valid:
             print(f"Invalid colour. Valid colours: {valid_colours_string}")
         elif colour_exists:
@@ -337,7 +346,9 @@ def check_size(valid_sizes):
     valid_sizes_string = ", ".join(valid_sizes)
     while True:
         size = (
-            input(f"Enter the patchwork size ({valid_sizes_string}): ").lower().strip()
+            input(f"Enter the patchwork size ({valid_sizes_string}): ")
+            .lower()
+            .strip()
         )
 
         valid_size = check_string_is_equal_to_item_in_list(size, valid_sizes)
@@ -349,7 +360,15 @@ def check_size(valid_sizes):
 
 def get_inputs():
     valid_sizes = ["5", "7", "9"]
-    valid_colours = ["red", "green", "blue", "magenta", "orange", "yellow", "cyan"]
+    valid_colours = [
+        "red",
+        "green",
+        "blue",
+        "magenta",
+        "orange",
+        "yellow",
+        "cyan",
+    ]
     colours = []
     sizes = []
 
@@ -357,12 +376,12 @@ def get_inputs():
         sizes.append(int(valid_size))
 
     size = check_size(valid_sizes)
-    colourOne = check_colour(valid_colours, colours)
-    colours.append(colourOne)
-    colourTwo = check_colour(valid_colours, colours)
-    colours.append(colourTwo)
-    colourThree = check_colour(valid_colours, colours)
-    colours.append(colourThree)
+    colour_one = check_colour(valid_colours, colours)
+    colours.append(colour_one)
+    colour_two = check_colour(valid_colours, colours)
+    colours.append(colour_two)
+    colour_three = check_colour(valid_colours, colours)
+    colours.append(colour_three)
 
     return int(size), sizes, colours, valid_colours
 
@@ -396,14 +415,18 @@ def draw_border(win, x, y):
         "objects": [],
     }
 
-    lineTopLeftToTopRight = Line(Point(x, y), Point(x + size, y))
-    border["objects"].append(lineTopLeftToTopRight)
-    lineTopLeftToBottomLeft = Line(Point(x, y), Point(x, y + size))
-    border["objects"].append(lineTopLeftToBottomLeft)
-    lineTopRightToBottomRight = Line(Point(x + size, y), Point(x + size, y + size))
-    border["objects"].append(lineTopRightToBottomRight)
-    lineBottomLeftToBottomRight = Line(Point(x, y + size), Point(x + size, y + size))
-    border["objects"].append(lineBottomLeftToBottomRight)
+    line_top_left_to_top_right = Line(Point(x, y), Point(x + size, y))
+    border["objects"].append(line_top_left_to_top_right)
+    line_top_left_to_bottom_left = Line(Point(x, y), Point(x, y + size))
+    border["objects"].append(line_top_left_to_bottom_left)
+    line_top_right_to_bottom_right = Line(
+        Point(x + size, y), Point(x + size, y + size)
+    )
+    border["objects"].append(line_top_right_to_bottom_right)
+    line_bottom_left_to_bottom_right = Line(
+        Point(x, y + size), Point(x + size, y + size)
+    )
+    border["objects"].append(line_bottom_left_to_bottom_right)
 
     for line in border["objects"]:
         line.draw(win)
@@ -492,7 +515,9 @@ def undraw_border(x, y, borders):
 
 def draw_border_and_add_patch_to_selected(win, patch, selected_list, borders):
     if patch in selected_list:
-        selected_list = remove_identical_x_and_y_patch_from_list(patch, selected_list)
+        selected_list = remove_identical_x_and_y_patch_from_list(
+            patch, selected_list
+        )
         borders = undraw_border(patch["x"], patch["y"], borders)
         return selected_list, borders
 
@@ -644,7 +669,10 @@ def remove_identical_x_and_y_patch_from_list(patch, patch_list):
     new_patch_list = []
 
     for patch_in_list in patch_list:
-        if patch["x"] == patch_in_list["x"] and patch["y"] == patch_in_list["y"]:
+        if (
+            patch["x"] == patch_in_list["x"]
+            and patch["y"] == patch_in_list["y"]
+        ):
             pass
         else:
             new_patch_list.append(patch_in_list)
@@ -652,9 +680,13 @@ def remove_identical_x_and_y_patch_from_list(patch, patch_list):
     return new_patch_list
 
 
-def update_patch_list_and_selected_list(new_patch_list, patch_list, selected_list):
+def update_patch_list_and_selected_list(
+    new_patch_list, patch_list, selected_list
+):
     for new_patch in new_patch_list:
-        patch_list = remove_identical_x_and_y_patch_from_list(new_patch, patch_list)
+        patch_list = remove_identical_x_and_y_patch_from_list(
+            new_patch, patch_list
+        )
         patch_list.append(new_patch)
         selected_list = remove_identical_x_and_y_patch_from_list(
             new_patch, selected_list
@@ -724,25 +756,33 @@ def challenge(win, patch_list, valid_colours):
                 selection_mode = True
             elif key == "p":
                 pens = draw_pen_patch_on_selected(win, selected_list)
-                patch_list, selected_list = update_patch_list_and_selected_list(
-                    pens, patch_list, selected_list
+                patch_list, selected_list = (
+                    update_patch_list_and_selected_list(
+                        pens, patch_list, selected_list
+                    )
                 )
             elif key == "f":
                 finals = draw_final_patch_on_selected(win, selected_list)
-                patch_list, selected_list = update_patch_list_and_selected_list(
-                    finals, patch_list, selected_list
+                patch_list, selected_list = (
+                    update_patch_list_and_selected_list(
+                        finals, patch_list, selected_list
+                    )
                 )
             elif key == "q":
                 colours = draw_colour_patch_on_selected(win, selected_list)
-                patch_list, selected_list = update_patch_list_and_selected_list(
-                    colours, patch_list, selected_list
+                patch_list, selected_list = (
+                    update_patch_list_and_selected_list(
+                        colours, patch_list, selected_list
+                    )
                 )
             elif key == "x":
                 four_colours = draw_four_colour_patch_on_selected(
                     win, selected_list, valid_colours
                 )
-                patch_list, selected_list = update_patch_list_and_selected_list(
-                    four_colours, patch_list, selected_list
+                patch_list, selected_list = (
+                    update_patch_list_and_selected_list(
+                        four_colours, patch_list, selected_list
+                    )
                 )
             elif key == "d":
                 undraw_objects_in_list_of_dictionary(borders)
