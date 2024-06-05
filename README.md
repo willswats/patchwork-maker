@@ -31,7 +31,7 @@ Display multiple patterns and interactively overwrite them.
 Install the dependencies:
 
 ```bash
-poetry install --no-root
+poetry install
 ```
 
 ### Run
